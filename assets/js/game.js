@@ -16,7 +16,11 @@ function init_game(width, height, options) {
   var return_package = {
     renderer: null, // PIXI renderer
     stage: null,    // PIXI stage
-    resources: PIXI.loader.resources  // PIXI resources
+    last_timestamp: new Date().getTime(),
+
+    // game-specific stuff
+    tiles: [],
+    ms_since_last_flip: 0
   };
 
   //Create the renderer
@@ -91,6 +95,31 @@ function Tile(texture_name) {
   this.solved = false;
 }
 
+function gameLoop() {
+  requestAnimationFrame(gameLoop);
+
+  var now = new Date().getTime();
+  var timedelta = now - game.last_timestamp;
+
+  game.ms_since_last_flip += timedelta;
+
+  if(game.ms_since_last_flip >= 1500) {
+    game.ms_since_last_flip = 0;
+    for(i in game.tiles) {
+      var tile = game.tiles[i];
+      if (tile.flipped_up) {
+        tile.flip_down();
+      } else {
+        tile.flip_up();
+      }
+    }
+  }
+
+  game.renderer.render(game.stage);
+
+  game.last_timestamp = now;
+}
+
 function done_loading() {
   var earth_sprite = new Sprite(TextureCache['tile_Earth.png']);
   var apophis_sprite = new Sprite(TextureCache['tile_Apophis.png']);
@@ -113,8 +142,12 @@ function done_loading() {
   game.stage.addChild(theta_tile.front);
   game.stage.addChild(theta_tile.back);
 
+  game.tiles.push(sigma_tile);
+  game.tiles.push(theta_tile);
 
   game.renderer.render(game.stage);
+
+  gameLoop();
 }
 
 function main() {
