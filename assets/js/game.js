@@ -1,107 +1,106 @@
-var constants = {
-  TILE_COLUMNS: 4,
-  TILE_ROWS: 4,
-  TILE_WIDTH: 66,
-  TILE_HEIGHT: 66
-}
+function ConcentrationGame() {
+  // Constants
+  var TILE_COLUMNS = 4;
+  var TILE_ROWS = 4;
 
-// Alias some constructors
-var Sprite = PIXI.Sprite;
-var Rectangle = PIXI.Rectangle;
-var TextureCache = PIXI.utils.TextureCache;
+  var BACKGROUND_COLOUR = 0x999999;
 
-var game = null;
+  this.start_time = 0;
+  this.last_timestamp = 0;
+  this.running_time = 0;
 
-function init_game(width, height, options) {
-  var return_package = {
-    renderer: null, // PIXI renderer
-    stage: null,    // PIXI stage
-    last_timestamp: new Date().getTime(),
+  this.renderer = PIXI.autoDetectRenderer(
+    TILE_COLUMNS * Tile.TILE_WIDTH,
+    TILE_ROWS * Tile.TILE_HEIGHT);
+  this.renderer.backgroundColor = BACKGROUND_COLOUR;
 
-    // game-specific stuff
-    tiles: [],
-    ms_since_last_flip: 0
-  };
+  this.stage = new PIXI.Container();
 
-  //Create the renderer
-  var renderer = PIXI.autoDetectRenderer(
-    constants.TILE_COLUMNS * constants.TILE_WIDTH,
-    constants.TILE_ROWS * constants.TILE_HEIGHT,
-    options);
-  renderer.backgroundColor = 0x999999;
+  this.renderer.render(this.stage);
 
-  //Add the canvas to the HTML document
-  document.body.appendChild(renderer.view);
+  // Assets to load
+  this.textures = [];
+  this.texture_atlases = ['assets/sprites/symbols.json'];
 
-  //Create a container object called the `stage`
-  var stage = new PIXI.Container();
+  // game objects
+  this.game_objects = [];
 
-  //Tell the `renderer` to `render` the `stage`
-  renderer.render(stage);
+  // Add the canvas to the DOM
+  document.body.appendChild(this.renderer.view);
 
-  return_package.renderer = renderer;
-  return_package.stage = stage;
+  /* Constructor Ends */
 
-  return return_package;
-}
+  /* Game states */
+  this.done_loading = false;
 
-function gameLoop() {
-  requestAnimationFrame(gameLoop);
-
-  var now = new Date().getTime();
-  var timedelta = now - game.last_timestamp;
-
-  for (i in game.tiles) {
-    game.tiles[i].update(timedelta);
+  function loading_assets(timedelta) {
+    var game = this;
+    function done_loading() {
+      game.done_loading = true;
+    };
+    console.log("Loading assets...")
+    PIXI.loader.add(this.textures)
+               .add(this.texture_atlases)
+               .load(done_loading);
+    this.state_name = 'initializing';
   }
 
-  game.renderer.render(game.stage);
+  function initializing(timedelta) {
+    // don't initialize until assets are loaded
+    if (this.done_loading) {
+      // create the tile objects
+      var sigma_tile = new Tile('tile_Sigma.png');
+      sigma_tile.move_to(128, 0);
+      this.stage.addChild(sigma_tile.front);
+      this.stage.addChild(sigma_tile.back);
+      sigma_tile.flipped_up = true;;
 
-  game.last_timestamp = now;
+      var theta_tile = new Tile('tile_Theta.png');
+      theta_tile.move_to(192, 64);
+      this.stage.addChild(theta_tile.front);
+      this.stage.addChild(theta_tile.back);
+
+      this.game_objects.push(sigma_tile);
+      this.game_objects.push(theta_tile);
+
+      this.state_name = 'main';
+    } else {
+      console.log('assets still loading...');
+      return false;
+    }
+  }
+
+  function main_state(timedelta) {
+    console.log("This is where I would handle input, I guess?");
+  }
+  this.game_states = {
+    'loading_assets': loading_assets,
+    'initializing': initializing,
+    'main': main_state
+  };
+
+  this.state_name = 'loading_assets'; // loading_assets should be initial state
+  this.state = null;
+
+  function update(timedelta) {
+
+    // call state update
+    if (this.state) {
+      this.state(timedelta);
+    }
+
+    // update objects
+    for (var i in this.game_objects) {
+      this.game_objects[i].update(timedelta);
+    }
+
+    // render graphics
+    this.renderer.render(this.stage);
+
+    // transition state
+    this.state = this.game_states[this.state_name];
+
+    this.running_time += timedelta;
+  }
+  this.update = update;
 }
-
-function done_loading() {
-  var earth_sprite = new Sprite(TextureCache['tile_Earth.png']);
-  var apophis_sprite = new Sprite(TextureCache['tile_Apophis.png']);
-
-  apophis_sprite.x = 128;
-  apophis_sprite.y = 64;
-
-  game.stage.addChild(earth_sprite);
-  game.stage.addChild(apophis_sprite);
-
-  // create the tile objects
-  var sigma_tile = new Tile('tile_Sigma.png');
-  sigma_tile.move_to(128, 0);
-  game.stage.addChild(sigma_tile.front);
-  game.stage.addChild(sigma_tile.back);
-  sigma_tile.flipped_up = true;;
-
-  var theta_tile = new Tile('tile_Theta.png');
-  theta_tile.move_to(192, 64);
-  game.stage.addChild(theta_tile.front);
-  game.stage.addChild(theta_tile.back);
-
-  game.tiles.push(sigma_tile);
-  game.tiles.push(theta_tile);
-
-  game.renderer.render(game.stage);
-
-  gameLoop();
-}
-
-function main() {
- game = init_game(constants.TILE_COLUMNS, constants.TILE_ROWS);
-
-  var textures = [
-  ]
-  var texture_atlases = [
-    'assets/sprites/symbols.json',
-  ]
-  PIXI.loader
-    .add(textures)
-    .add(texture_atlases)
-    .load(done_loading)
-}
-
-main();

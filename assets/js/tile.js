@@ -14,8 +14,14 @@
  * */
 
 var TIME_TO_FLIP = 1500;
+var TILE_WIDTH = 64;
+var TILE_HEIGHT = 64;
 
 function Tile(texture_name) {
+  // Aliases
+  var Sprite = PIXI.Sprite;
+  var TextureCache = PIXI.utils.TextureCache;
+
   this.sibling = null;
 
   this.x = 0;
@@ -59,4 +65,5 @@ function Tile(texture_name) {
   this.update = update;
 }
 
-
+Tile.TILE_WIDTH = TILE_WIDTH;
+Tile.TILE_HEIGHT = TILE_HEIGHT;
