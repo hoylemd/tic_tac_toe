@@ -45,19 +45,26 @@ function main() {
   var game = init_game(constants.TILE_COLUMNS, constants.TILE_ROWS);
 
   var textures = [
-    'assets/images/images.png',
+  ]
+  var texture_atlases = [
+    'assets/sprites/symbols.json',
   ]
 
   function done_loading() {
-    var person_sprite = new Sprite(TextureCache['assets/images/images.png']);
+    var earth_sprite = new Sprite(TextureCache['tile_Earth.png']);
+    var apophis_sprite = new Sprite(TextureCache['tile_Apophis.png']);
 
+    apophis_sprite.x = 128;
+    apophis_sprite.y = 64;
 
-    game.stage.addChild(person_sprite);
+    game.stage.addChild(earth_sprite);
+    game.stage.addChild(apophis_sprite);
     game.renderer.render(game.stage);
   }
 
   PIXI.loader
     .add(textures)
+    .add(texture_atlases)
     .load(done_loading)
 }
 
