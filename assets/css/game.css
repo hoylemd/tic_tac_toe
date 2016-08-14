@@ -1,0 +1,76 @@
+/* room slice is 32px wide, 64px tall */
+/* 26 slices wide. 32 x 26 = 832px */
+/* lets say 10 levels to start */
+
+.vault {
+  width: 832px;
+  height: 640px;
+  background-color: #997585;
+}
+
+.vault-view div {
+  margin: 0px 0px;
+  padding: 0px 0px;
+  border: 0px 0px;
+}
+
+.vault-level {
+  width: 832px;
+  display: block;
+}
+
+.room-slice {
+  height: 62px;
+  display: block;
+  float: left;
+  border: 1px solid #333333;
+}
+
+.room-slice-1 {
+  width: 30px;
+}
+
+.room-slice-3 {
+  width: 94px;
+}
+
+.room-slice-6 {
+  width: 190px;
+}
+
+.room-slice-9 {
+  width: 286px;
+}
+
+/*
+ * red - power
+ * green - food
+ * blue - water
+ * yellow - dwelling
+ * purple - entrance
+ * white - medicine
+ * orange - elevator
+ */
+.room-earth {
+  background-color: none;
+}
+.room-entrance {
+  background-color: #AA00AA;
+}
+.room-elevator {
+  background-color: #AA8888;
+}
+.room-power {
+  background-color: #AA0000;
+}
+.room-food {
+  background-color: #00AA00;
+}
+.room-water {
+  background-color: #0000AA;
+}
+
+body {
+  background-color: #222222;
+}
+
