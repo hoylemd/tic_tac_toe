@@ -1,9 +1,16 @@
 var constants = {
-  TILE_COLUMNS: 6,
-  TILE_ROWS: 6,
+  TILE_COLUMNS: 4,
+  TILE_ROWS: 4,
   TILE_WIDTH: 66,
   TILE_HEIGHT: 66
 }
+
+// Alias some constructors
+var Sprite = PIXI.Sprite;
+var Rectangle = PIXI.Rectangle;
+var TextureCache = PIXI.utils.TextureCache;
+
+var game = null;
 
 function init_game(width, height, options) {
   var return_package = {
@@ -34,34 +41,90 @@ function init_game(width, height, options) {
   return return_package;
 }
 
+/* tiles
+ * tile_A
+ * tile_Apophis
+ * tile_Delta
+ * tile_Earth
+ * tile_Gamma
+ * tile_Omega
+ * tile_Sigma
+ * tile_Theta
+ *
+ * tile_Back
+ * */
+
+function Tile(texture_name) {
+  this.sibling = null;
+
+  this.front = new Sprite(TextureCache[texture_name]);
+  this.front.visible = false;
+
+  this.back = new Sprite(TextureCache['tile_Back.png']);
+  this.back.visible = true;
+
+  this.flipped_up = false;
+
+  function move_to(x, y) {
+    this.front.x = x;
+    this.front.y = y;
+
+    this.back.x = x;
+    this.back.y = y;
+  }
+  this.move_to = move_to;
+
+  function flip_up() {
+    this.front.visible = true;
+    this.back.visible = false;
+    this.flipped_up = true;
+  }
+  this.flip_up = flip_up;
+
+  function flip_down() {
+    this.front.visible = false;
+    this.back.visible = true;
+    this.flipped_up = false;
+  }
+  this.flip_down = flip_down;
+
+  this.solved = false;
+}
+
+function done_loading() {
+  var earth_sprite = new Sprite(TextureCache['tile_Earth.png']);
+  var apophis_sprite = new Sprite(TextureCache['tile_Apophis.png']);
+
+  apophis_sprite.x = 128;
+  apophis_sprite.y = 64;
+
+  game.stage.addChild(earth_sprite);
+  game.stage.addChild(apophis_sprite);
+
+  // create the tile objects
+  var sigma_tile = new Tile('tile_Sigma.png');
+  sigma_tile.move_to(128, 0);
+  game.stage.addChild(sigma_tile.front);
+  game.stage.addChild(sigma_tile.back);
+  sigma_tile.flip_up();
+
+  var theta_tile = new Tile('tile_Theta.png');
+  theta_tile.move_to(192, 64);
+  game.stage.addChild(theta_tile.front);
+  game.stage.addChild(theta_tile.back);
+
+
+  game.renderer.render(game.stage);
+}
+
 function main() {
- var PI = 3.14159;
-
-  // Alias some constructors
-  var Sprite = PIXI.Sprite;
-  var Rectangle = PIXI.Rectangle;
-  var TextureCache = PIXI.utils.TextureCache;
-
-  var game = init_game(constants.TILE_COLUMNS, constants.TILE_ROWS);
+ game = init_game(constants.TILE_COLUMNS, constants.TILE_ROWS);
 
   var textures = [
   ]
   var texture_atlases = [
     'assets/sprites/symbols.json',
   ]
-
-  function done_loading() {
-    var earth_sprite = new Sprite(TextureCache['tile_Earth.png']);
-    var apophis_sprite = new Sprite(TextureCache['tile_Apophis.png']);
-
-    apophis_sprite.x = 128;
-    apophis_sprite.y = 64;
-
-    game.stage.addChild(earth_sprite);
-    game.stage.addChild(apophis_sprite);
-    game.renderer.render(game.stage);
-  }
-
   PIXI.loader
     .add(textures)
     .add(texture_atlases)

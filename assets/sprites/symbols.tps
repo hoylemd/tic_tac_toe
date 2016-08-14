@@ -190,6 +190,7 @@
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">../images/tile_A.png</key>
             <key type="filename">../images/tile_Apophis.png</key>
+            <key type="filename">../images/tile_Back.png</key>
             <key type="filename">../images/tile_Delta.png</key>
             <key type="filename">../images/tile_Earth.png</key>
             <key type="filename">../images/tile_Gamma.png</key>
@@ -211,6 +212,7 @@
             <filename>../images/tile_Omega.png</filename>
             <filename>../images/tile_Sigma.png</filename>
             <filename>../images/tile_Theta.png</filename>
+            <filename>../images/tile_Back.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
