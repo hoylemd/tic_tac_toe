@@ -45,74 +45,14 @@ function init_game(width, height, options) {
   return return_package;
 }
 
-/* tiles
- * tile_A
- * tile_Apophis
- * tile_Delta
- * tile_Earth
- * tile_Gamma
- * tile_Omega
- * tile_Sigma
- * tile_Theta
- *
- * tile_Back
- * */
-
-function Tile(texture_name) {
-  this.sibling = null;
-
-  this.front = new Sprite(TextureCache[texture_name]);
-  this.front.visible = false;
-
-  this.back = new Sprite(TextureCache['tile_Back.png']);
-  this.back.visible = true;
-
-  this.flipped_up = false;
-
-  function move_to(x, y) {
-    this.front.x = x;
-    this.front.y = y;
-
-    this.back.x = x;
-    this.back.y = y;
-  }
-  this.move_to = move_to;
-
-  function flip_up() {
-    this.front.visible = true;
-    this.back.visible = false;
-    this.flipped_up = true;
-  }
-  this.flip_up = flip_up;
-
-  function flip_down() {
-    this.front.visible = false;
-    this.back.visible = true;
-    this.flipped_up = false;
-  }
-  this.flip_down = flip_down;
-
-  this.solved = false;
-}
-
 function gameLoop() {
   requestAnimationFrame(gameLoop);
 
   var now = new Date().getTime();
   var timedelta = now - game.last_timestamp;
 
-  game.ms_since_last_flip += timedelta;
-
-  if(game.ms_since_last_flip >= 1500) {
-    game.ms_since_last_flip = 0;
-    for(i in game.tiles) {
-      var tile = game.tiles[i];
-      if (tile.flipped_up) {
-        tile.flip_down();
-      } else {
-        tile.flip_up();
-      }
-    }
+  for (i in game.tiles) {
+    game.tiles[i].update(timedelta);
   }
 
   game.renderer.render(game.stage);
@@ -135,7 +75,7 @@ function done_loading() {
   sigma_tile.move_to(128, 0);
   game.stage.addChild(sigma_tile.front);
   game.stage.addChild(sigma_tile.back);
-  sigma_tile.flip_up();
+  sigma_tile.flipped_up = true;;
 
   var theta_tile = new Tile('tile_Theta.png');
   theta_tile.move_to(192, 64);
