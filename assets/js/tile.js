@@ -13,7 +13,6 @@
  * tile_Back
  * */
 
-var TIME_TO_FLIP = 1500;
 var TILE_WIDTH = 64;
 var TILE_HEIGHT = 64;
 
@@ -35,7 +34,6 @@ function Tile(texture_name) {
   this.back = new Sprite(TextureCache['tile_Back.png']);
   this.back.visible = true;
 
-  this.time_since_last_flip = 0;
   this.flipped_up = false;
 
   this.solved = false;
@@ -47,14 +45,6 @@ function Tile(texture_name) {
   this.move_to = move_to;
 
   function update(timedelta) {
-
-    this.time_since_last_flip += timedelta;
-
-    if (this.time_since_last_flip >= TIME_TO_FLIP) {
-      this.flipped_up = !this.flipped_up;
-      this.time_since_last_flip = 0;
-    }
-
     this.front.x = this.x;
     this.front.y = this.y;
     this.front.visible = this.flipped_up;
