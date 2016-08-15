@@ -1,3 +1,8 @@
+// from main.js:
+//   random_int(min, max)
+// from tile.js:
+//   Tile
+
 function ConcentrationGame() {
   // Constants
   var TILE_COLUMNS = 4;
@@ -77,6 +82,18 @@ function ConcentrationGame() {
       }
 
       // shuffle the tiles
+      for (var i in this.tiles) {
+        var first_tile = this.tiles[i];
+        var swap_index = random_int(0, this.tiles.length);
+        var second_tile = this.tiles[swap_index];
+
+        /* console.log("swapping tile " + i + "(" + first_tile.name + ")" +
+                    " with tile " + swap_index + "(" + second_tile.name + ")");
+        */
+
+        this.tiles[swap_index] = first_tile;
+        this.tiles[i] = second_tile;
+      }
 
       // position the tiles
       for (var i in this.tiles) {
