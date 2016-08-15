@@ -38,6 +38,7 @@ function Tile(texture_name) {
 
   this.solved = false;
 
+  // Methods
   function move_to(x, y) {
     this.x = x;
     this.y = y;
@@ -55,6 +56,19 @@ function Tile(texture_name) {
 
   }
   this.update = update;
+
+  // Interactivity
+  // Make the backs interactive
+  this.back.interactive = true;
+
+  var tile = this
+  function onBackClicked() {
+    tile.flipped_up = true;
+  }
+
+  // Set interactions on our goose
+  this.back.on('mouseup', onBackClicked)
+           .on('touchend', onBackClicked);
 }
 
 Tile.TILE_WIDTH = TILE_WIDTH;

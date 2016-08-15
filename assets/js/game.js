@@ -71,9 +71,6 @@ function ConcentrationGame() {
         this.stage.addChild(second_tile.front);
         this.stage.addChild(second_tile.back);
 
-        first_tile.flipped_up = true;
-        second_tile.flipped_up = true;
-
         this.tiles.push(first_tile);
         this.tiles.push(second_tile);
 
