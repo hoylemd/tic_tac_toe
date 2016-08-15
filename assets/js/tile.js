@@ -22,6 +22,8 @@ function Tile(texture_name) {
   var Sprite = PIXI.Sprite;
   var TextureCache = PIXI.utils.TextureCache;
 
+  // Attributes
+  this.name = texture_name;
   this.sibling = null;
 
   this.x = 0;

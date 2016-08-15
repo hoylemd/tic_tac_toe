@@ -23,6 +23,7 @@ function ConcentrationGame() {
   this.texture_atlases = ['assets/sprites/symbols.json'];
 
   // game objects
+  this.tiles = [];
   this.game_objects = [];
 
   // Add the canvas to the DOM
@@ -48,20 +49,43 @@ function ConcentrationGame() {
   function initializing(timedelta) {
     // don't initialize until assets are loaded
     if (this.done_loading) {
-      // create the tile objects
-      var sigma_tile = new Tile('tile_Sigma.png');
-      sigma_tile.move_to(128, 0);
-      this.stage.addChild(sigma_tile.front);
-      this.stage.addChild(sigma_tile.back);
-      sigma_tile.flipped_up = true;;
+      var symbol_names = ['A', 'Apophis', 'Delta', 'Earth',
+                          'Gamma', 'Omega', 'Sigma', 'Theta'];
+      // create the tile pairs
+      for (var i in symbol_names) {
+        var texture_name = 'tile_' + symbol_names[i] + '.png';
+        var first_tile = new Tile(texture_name);
+        var second_tile = new Tile(texture_name);
 
-      var theta_tile = new Tile('tile_Theta.png');
-      theta_tile.move_to(192, 64);
-      this.stage.addChild(theta_tile.front);
-      this.stage.addChild(theta_tile.back);
+        first_tile.sibling = second_tile;
+        second_tile.sibling = first_tile;
 
-      this.game_objects.push(sigma_tile);
-      this.game_objects.push(theta_tile);
+        this.stage.addChild(first_tile.front);
+        this.stage.addChild(first_tile.back);
+
+        this.stage.addChild(second_tile.front);
+        this.stage.addChild(second_tile.back);
+
+        first_tile.flipped_up = true;
+        second_tile.flipped_up = true;
+
+        this.tiles.push(first_tile);
+        this.tiles.push(second_tile);
+
+        this.game_objects.push(first_tile);
+        this.game_objects.push(second_tile);
+      }
+
+      // shuffle the tiles
+
+      // position the tiles
+      for (var i in this.tiles) {
+        var tile = this.tiles[i];
+        var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
+        var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
+        // console.log("moving " + tile.name + " to (" + x + ", " + y + ")");
+        tile.move_to(x, y);
+      }
 
       this.state_name = 'main';
     } else {
@@ -77,6 +101,9 @@ function ConcentrationGame() {
     'loading_assets': loading_assets,
     'initializing': initializing,
     'main': main_state
+    // one flipped
+    // two flipped
+    // win
   };
 
   this.state_name = 'loading_assets'; // loading_assets should be initial state
