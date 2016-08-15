@@ -23,20 +23,22 @@ function Tile(texture_name) {
 
   // Attributes
   this.name = texture_name;
+  this.events = {}; // Events have a name (string key) and an array of arguments
+
   this.sibling = null;
+  this.flipped_up = false;
+  this.solved = false;
 
   this.x = 0;
   this.y = 0;
 
+  // TODO: only use one sprite and swap textures
   this.front = new Sprite(TextureCache[texture_name]);
   this.front.visible = false;
 
   this.back = new Sprite(TextureCache['tile_Back.png']);
   this.back.visible = true;
 
-  this.flipped_up = false;
-
-  this.solved = false;
 
   // Methods
   function move_to(x, y) {
@@ -54,6 +56,9 @@ function Tile(texture_name) {
     this.back.y = this.y;
     this.back.visible = !this.flipped_up;
 
+    var events = this.events;
+    this.events = {};
+    return events;
   }
   this.update = update;
 
@@ -64,6 +69,7 @@ function Tile(texture_name) {
   var tile = this
   function onBackClicked() {
     tile.flipped_up = true;
+    tile.events['tile_flipped'] = [];
   }
 
   // Set interactions on our goose

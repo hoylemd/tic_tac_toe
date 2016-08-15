@@ -39,8 +39,8 @@ function ConcentrationGame() {
   /* Game states */
   this.done_loading = false;
 
+  var game = this;
   function loading_assets(timedelta) {
-    var game = this;
     function done_loading() {
       game.done_loading = true;
     };
@@ -109,13 +109,19 @@ function ConcentrationGame() {
   }
 
   function main_state(timedelta) {
-    console.log("This is where I would handle input, I guess?");
+    console.log("Click a tile!");
   }
+
+  function one_flipped(timedelta) {
+    console.log("You flipped a tile!");
+    this.state_name = 'main';
+  }
+
   this.game_states = {
     'loading_assets': loading_assets,
     'initializing': initializing,
-    'main': main_state
-    // one flipped
+    'main': main_state,
+    'one_flipped': one_flipped
     // two flipped
     // win
   };
@@ -123,6 +129,16 @@ function ConcentrationGame() {
   this.state_name = 'loading_assets'; // loading_assets should be initial state
   this.state = null;
 
+  // events
+  function tile_flipped(object, parameters) {
+    game.state_name = 'one_flipped';
+  }
+
+  this.events = {
+    'tile_flipped': tile_flipped
+  }
+
+  // Main driver method
   function update(timedelta) {
 
     // call state update
@@ -132,7 +148,17 @@ function ConcentrationGame() {
 
     // update objects
     for (var i in this.game_objects) {
-      this.game_objects[i].update(timedelta);
+      var object = this.game_objects[i];
+      var events = object.update(timedelta);
+
+      for (var event in events) {
+        if (this.events[event]) {
+          var handler = this.events[event];
+          handler(object, events[event]);
+        } else {
+          throw "Event '" + event + "' is not known!!!";
+        }
+      };
     }
 
     // render graphics
