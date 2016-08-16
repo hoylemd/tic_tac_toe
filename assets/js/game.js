@@ -41,39 +41,33 @@ function ConcentrationGame() {
 
   var game = this;
   function loading_assets_state() {
-    var state = {
-      name: 'loading_assets',
-      loading_started: false,
-      done_loading: false,
-    }
+    this.name = 'loading_assets';
+    this.loading_started = false;
+    var loading = true;
 
     function done_loading() {
-      state.done_loading = true;
+      loading = false;
     };
 
     function loading_assets_update(timedelta) {
-      if (!state.loading_started) {
+      if (!this.loading_started) {
         console.log("Loading assets...")
         PIXI.loader.add(game.textures)
                    .add(game.texture_atlases)
                    .load(done_loading);
-        state.loading_started = true;
-      } else if (state.done_loading){
+        this.loading_started = true;
+      } else if (loading){
+        console.log("still loading...");
+      } else {
         console.log("done loading assets!");
         game.state_name = 'initializing';
-      } else {
-        console.log("still loading...");
       }
     }
-
-    state.update = loading_assets_update;
-    return state;
+    this.update = loading_assets_update;
   }
 
   function initializing_state() {
-    var state = {
-      name: 'initializing'
-    };
+    this.name = 'initializing'
 
     function initializing_update(timedelta) {
       // don't initialize until assets are loaded
@@ -124,35 +118,28 @@ function ConcentrationGame() {
       game.state_name = 'main';
     }
 
-    state.update = initializing_update;
-    return state;
+    this.update = initializing_update;
   }
 
   function main_state() {
-    var state = {
-      name: 'main'
-    };
+    this.name = 'main';
 
     function main_update(timedelta) {
       console.log("Click a tile!");
     }
 
-    state.update = main_update;
-    return state;
+    this.update = main_update;
   }
 
   function one_flipped_state() {
-    var state = {
-      name: 'one_flipped'
-    };
+    this.name = 'one_flipped';
 
     function one_flipped_update(timedelta) {
       console.log("You flipped a tile!");
       game.state_name = 'main';
     }
 
-    state.update = one_flipped_update;
-    return state;
+    this.update = one_flipped_update;
   }
 
   this.game_states = {
@@ -205,7 +192,7 @@ function ConcentrationGame() {
     // transition state
     // TODO: add a transition mathod
     if (this.state_name != (this.state && this.state.name)) {
-      this.state = this.game_states[this.state_name]();
+      this.state = new this.game_states[this.state_name]();
     }
 
     this.running_time += timedelta;
