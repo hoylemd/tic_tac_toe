@@ -33,12 +33,10 @@ function Tile(texture_name) {
   this.y = 0;
 
   // TODO: only use one sprite and swap textures
-  this.front = new Sprite(TextureCache[texture_name]);
-  this.front.visible = false;
+  this.front_texture = TextureCache[texture_name];
+  this.back_texture = TextureCache['tile_Back.png'];
 
-  this.back = new Sprite(TextureCache['tile_Back.png']);
-  this.back.visible = true;
-
+  this.sprite = new Sprite(this.back_texture);
 
   // Methods
   function move_to(x, y) {
@@ -48,13 +46,14 @@ function Tile(texture_name) {
   this.move_to = move_to;
 
   function update(timedelta) {
-    this.front.x = this.x;
-    this.front.y = this.y;
-    this.front.visible = this.flipped_up;
+    this.sprite.x = this.x;
+    this.sprite.y = this.y;
 
-    this.back.x = this.x;
-    this.back.y = this.y;
-    this.back.visible = !this.flipped_up;
+    if (this.flipped_up) {
+      this.sprite.texture = this.front_texture;
+    } else {
+       this.sprite.texture = this.back_texture;
+    }
 
     var events = this.events;
     this.events = {};
@@ -63,18 +62,19 @@ function Tile(texture_name) {
   this.update = update;
 
   // Interactivity
-  // Make the backs interactive
-  this.back.interactive = true;
+  this.sprite.interactive = true;
 
   var tile = this
   function onBackClicked() {
-    tile.flipped_up = true;
-    tile.events['tile_flipped'] = [];
+    if (!tile.flipped_up) {
+      tile.flipped_up = true;
+      tile.events['tile_flipped'] = [];
+    }
   }
 
-  // Set interactions on our goose
-  this.back.on('mouseup', onBackClicked)
-           .on('touchend', onBackClicked);
+  // Set interactions
+  this.sprite.on('mouseup', onBackClicked)
+             .on('touchend', onBackClicked);
 }
 
 Tile.TILE_WIDTH = TILE_WIDTH;

@@ -88,11 +88,8 @@ function ConcentrationGame() {
         first_tile.sibling = second_tile;
         second_tile.sibling = first_tile;
 
-        game.stage.addChild(first_tile.front);
-        game.stage.addChild(first_tile.back);
-
-        game.stage.addChild(second_tile.front);
-        game.stage.addChild(second_tile.back);
+        game.stage.addChild(first_tile.sprite);
+        game.stage.addChild(second_tile.sprite);
 
         game.tiles.push(first_tile);
         game.tiles.push(second_tile);
