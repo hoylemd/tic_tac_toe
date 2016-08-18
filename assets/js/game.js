@@ -60,7 +60,7 @@ function ConcentrationGame() {
         console.log("still loading...");
       } else {
         console.log("done loading assets!");
-        game.state_name = 'initializing';
+        game.transition_state('initializing');
       }
     }
     this.update = loading_assets_update;
@@ -115,7 +115,7 @@ function ConcentrationGame() {
         tile.move_to(x, y);
       }
 
-      game.state_name = 'main';
+      game.transition_state('main');
     }
 
     this.update = initializing_update;
@@ -136,7 +136,7 @@ function ConcentrationGame() {
 
     function one_flipped_update(timedelta) {
       console.log("You flipped a tile!");
-      game.state_name = 'main';
+      game.transition_state('main');
     }
 
     this.update = one_flipped_update;
@@ -156,12 +156,20 @@ function ConcentrationGame() {
 
   // events
   function tile_flipped(object, parameters) {
-    game.state_name = 'one_flipped';
+    game.transition_state('one_flipped');
   }
 
   this.events = {
     'tile_flipped': tile_flipped
   }
+
+  // transition methods
+  this.transitioning = true;
+  function transition_state(next_state) {
+    this.state_name = next_state;
+    this.transitioning = true;
+  }
+  this.transition_state = transition_state;
 
   // Main driver method
   function update(timedelta) {
@@ -190,9 +198,9 @@ function ConcentrationGame() {
     this.renderer.render(this.stage);
 
     // transition state
-    // TODO: add a transition mathod
-    if (this.state_name != (this.state && this.state.name)) {
+    if (this.transitioning) {
       this.state = new this.game_states[this.state_name]();
+      this.transitioning = false;
     }
 
     this.running_time += timedelta;

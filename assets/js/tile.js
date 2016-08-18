@@ -32,7 +32,6 @@ function Tile(texture_name) {
   this.x = 0;
   this.y = 0;
 
-  // TODO: only use one sprite and swap textures
   this.front_texture = TextureCache[texture_name];
   this.back_texture = TextureCache['tile_Back.png'];
 
