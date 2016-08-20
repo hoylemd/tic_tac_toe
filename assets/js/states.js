@@ -1,6 +1,6 @@
 // from pixi.js:
 //   PIXI
-// from main.js:
+// from utils.js:
 //   random_int(min, max)
 // from tile.js:
 //   Tile
