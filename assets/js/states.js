@@ -69,6 +69,26 @@ function LoadingAssetsState(game) {
 LoadingAssetsState.prototype = Object.create(GameState.prototype);
 all_states['loading_assets'] = LoadingAssetsState;
 
+function set_up_tiles(tiles) {
+    for (var i in tiles) {
+      var swap_tile = tiles[i];
+      var swap_index = random_int(0, tiles.length);
+
+      tiles[i] = tiles[swap_index];
+      tiles[swap_index] = swap_tile;;
+    }
+
+    for (var i in tiles) {
+      var tile = tiles[i];
+      var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
+      var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
+
+      tile.move_to(x, y);
+      tile.flip_down();
+      tile.solved = false;
+    }
+}
+
 function InitializingState(game) {
   GameState.call(this, game);
 
@@ -97,25 +117,7 @@ function InitializingState(game) {
       this.game.game_objects.push(second_tile);
     }
 
-    var tiles = this.game.tiles;
-
-    // shuffle the tiles
-    for (var i in tiles) {
-      var swap_tile = tiles[i];
-      var swap_index = random_int(0, tiles.length);
-
-      tiles[i] = tiles[swap_index];
-      tiles[swap_index] = swap_tile;;
-    }
-
-    // position the tiles
-    for (var i in tiles) {
-      var tile = tiles[i];
-      var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
-      var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
-
-      tile.move_to(x, y);
-    }
+    set_up_tiles(game.tiles);
 
     this.game.transition_state('main');
   };
@@ -153,17 +155,17 @@ function OneFlippedState(game) {
 
   this.name = 'one_flipped';
 
-  var ms_to_flip = 5000;
+  var timeout = 5000;
   var next_update = 5;
 
   this.update = function OneFlippedState_update(timedelta) {
-    if (ms_to_flip === 5000) {
+    if (timeout === 5000) {
       console.log('You flipped a ' + game.flipped_tile.name + ' tile!');
     };
 
-    ms_to_flip -= timedelta;
+    timeout -= timedelta;
 
-    if (ms_to_flip <= 0) {
+    if (timeout <= 0) {
       game.flipped_tile.flip_down();
       game.flipped_tile = null;
 
@@ -171,7 +173,7 @@ function OneFlippedState(game) {
 
       game.transition_state('main');
     } else {
-      if (ms_to_flip < next_update * 1000) {
+      if (timeout < next_update * 1000) {
         console.log('' + next_update + ' seconds left to make a choice...');
         next_update -= 1;
       }
@@ -196,9 +198,10 @@ function OneFlippedState(game) {
 
       if (all_solved) {
         console.log("Great job! You got them all!");
+        game.transition_state('win');
+      } else {
+        game.transition_state('main');
       }
-
-      game.transition_state('main');
     } else {
       console.log('You flipped a ' + game.second_flipped_tile.name + ' tile,' +
                   ' but it doesn\'t match the ' + game.flipped_tile.name +
@@ -220,13 +223,13 @@ function MistakeState(game) {
 
   this.name = 'mistake';
 
-  var ms_to_flip = 3000;
+  var timeout = 3000;
   var next_update = 3;
 
   this.update = function MistakeState_update(timedelta) {
-    ms_to_flip -= timedelta;
+    timeout -= timedelta;
 
-    if (ms_to_flip <= 0) {
+    if (timeout <= 0) {
       game.flipped_tile.flip_down();
       game.flipped_tile = null;
 
@@ -237,7 +240,7 @@ function MistakeState(game) {
 
       game.transition_state('main');
     } else {
-      if (ms_to_flip < next_update * 1000) {
+      if (timeout < next_update * 1000) {
         console.log('' + next_update + ' seconds until you may try again');
         next_update -= 1;
       }
@@ -247,6 +250,32 @@ function MistakeState(game) {
 }
 MistakeState.prototype = Object.create(GameState.prototype);
 all_states['mistake'] = MistakeState;
+
+function WinState(game) {
+  GameState.call(this, game);
+
+  this.name = 'win';
+
+  var timeout = 5000;
+  var next_update = 5;
+
+  this.update = function WinState_update(timedelta) {
+    timeout -= timedelta;
+
+    if (timeout <= 0) {
+      console.log('Restarting the game!');
+      set_up_tiles(game.tiles);
+      game.transition_state('main');
+    } else {
+      if (timeout < next_update * 1000) {
+        console.log('' + next_update + ' seconds until the game resets');
+        next_update -= 1;
+      }
+    }
+  };
+}
+WinState.prototype = Object.create(GameState.prototype);
+all_states['win'] = WinState;
 
 function get_all_states() {
   all_states.__initial__ = 'loading_assets';
