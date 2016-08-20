@@ -27,10 +27,6 @@ function ConcentrationGame() {
 
   this.renderer.render(this.stage);
 
-  // Assets to load
-  this.textures = [];
-  this.texture_atlases = ['assets/sprites/symbols.json'];
-
   // game objects
   this.tiles = [];
   this.flipped_tile = null;

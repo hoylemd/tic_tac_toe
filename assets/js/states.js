@@ -46,9 +46,13 @@ function LoadingAssetsState(game) {
         that.loading_done = true;
       }
 
-      // TODO: These assets could be defined here...
-      PIXI.loader.add(this.game.textures)
-                 .add(this.game.texture_atlases)
+      // Define Textures and Atlases to load here
+      var textures = [];
+      var texture_atlases = ['assets/sprites/symbols.json'];
+      // Done defining Textures and Atlases
+
+      PIXI.loader.add(textures)
+                 .add(texture_atlases)
                  .load(done_loading);
       this.loading_started = true;
     } else if (this.loading_done){
