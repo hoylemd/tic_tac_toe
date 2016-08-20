@@ -70,8 +70,8 @@ function InitializingState(game) {
     // create the tile pairs
     for (var i in symbol_names) {
       var texture_name = 'tile_' + symbol_names[i] + '.png';
-      var first_tile = new Tile(texture_name);
-      var second_tile = new Tile(texture_name);
+      var first_tile = new Tile(symbol_names[i], texture_name);
+      var second_tile = new Tile(symbol_names[i], texture_name);
 
       first_tile.sibling = second_tile;
       second_tile.sibling = first_tile;

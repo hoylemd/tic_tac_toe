@@ -16,13 +16,13 @@
 var TILE_WIDTH = 64;
 var TILE_HEIGHT = 64;
 
-function Tile(texture_name) {
+function Tile(tile_name, texture_name) {
   // Aliases
   var Sprite = PIXI.Sprite;
   var TextureCache = PIXI.utils.TextureCache;
 
   // Attributes
-  this.name = texture_name;
+  this.name = tile_name;
   this.events = {}; // Events have a name (string key) and an array of arguments
 
   this.sibling = null;
