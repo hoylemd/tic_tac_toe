@@ -29,6 +29,9 @@ GameState.prototype = {
   }
 };
 
+// Global list of states
+var all_states = {};
+
 function LoadingAssetsState(game) {
   GameState.call(this, game);
 
@@ -64,6 +67,7 @@ function LoadingAssetsState(game) {
   };
 }
 LoadingAssetsState.prototype = Object.create(GameState.prototype);
+all_states['loading_assets'] = LoadingAssetsState;
 
 function InitializingState(game) {
   GameState.call(this, game);
@@ -117,6 +121,7 @@ function InitializingState(game) {
   };
 }
 InitializingState.prototype = Object.create(GameState.prototype);
+all_states['initializing'] = InitializingState;
 
 function MainState(game) {
   GameState.call(this, game);
@@ -141,6 +146,7 @@ function MainState(game) {
   }
 }
 MainState.prototype = Object.create(GameState.prototype);
+all_states['main'] = MainState;
 
 function OneFlippedState(game) {
   GameState.call(this, game);
@@ -148,6 +154,7 @@ function OneFlippedState(game) {
   this.name = 'one_flipped';
 
   var ms_to_flip = 5000;
+  var next_update = 5;
 
   this.update = function OneFlippedState_update(timedelta) {
     if (ms_to_flip === 5000) {
@@ -163,9 +170,60 @@ function OneFlippedState(game) {
       console.log('Time\'s up!');
 
       game.transition_state('main');
+    } else {
+      if (ms_to_flip < next_update * 1000) {
+        console.log('' + next_update + ' seconds left to make a choice...');
+        next_update -= 1;
+      }
+    }
+
+  };
+
+  function tile_flipped(object, parameters) {
+    game.second_flipped_tile = object;
+    object.flip_up();
+
+    if (object.sibling == game.flipped_tile) {
+
     }
   }
 }
 OneFlippedState.prototype = Object.create(GameState.prototype);
+all_states['one_flipped'] = OneFlippedState;
 
+function TwoFlippedWrongState(game) {
+  GameState.call(this, game);
 
+  this.name = 'two_flipped_wrong';
+
+  var ms_to_flip = 3000;
+
+  this.update = function TwoFlippedWrongState_update(timedelta) {
+    if (ms_to_flip === 3000) {
+      console.log('You flipped a ' + game.second_flipped_tile.name + ' tile,' +
+                  ' but it doesn\'t match the ' + game.flipped_tile.name +
+                  ' that you flipped first! Try again in 3 seconds.');
+    }
+
+    ms_to_flip -= timedelta;
+
+    if (ms_to_flip <= 0) {
+      game.flipped_tile.flip_down();
+      game.flipped_tile = null;
+
+      game.second_flipped_tile.flip_down();
+      game.second_flipped_tile.flip_down();
+
+      console.log('Time\'s up! Try again!');
+
+      game.transition_state('main');
+    }
+  };
+}
+TwoFlippedWrongState.prototype = Object.create(GameState.prototype);
+all_states['two_flipped_wrong'] = TwoFlippedWrongState;
+
+function get_all_states() {
+  all_states.__initial__ = 'loading_assets';
+  return all_states;
+}

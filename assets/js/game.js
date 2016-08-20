@@ -3,10 +3,7 @@
 // from tile.js:
 //   Tile
 // from states.js:
-//   LoadingAssetsState
-//   InitializingState
-//   MainState
-//   OneFlippedState
+//   get_all_states()
 function ConcentrationGame() {
   // Constants
   var TILE_COLUMNS = 4;
@@ -30,6 +27,7 @@ function ConcentrationGame() {
   // game objects
   this.tiles = [];
   this.flipped_tile = null;
+  this.second_flipped_tile = null;
   this.game_objects = [];
 
   // Add the canvas to the DOM
@@ -41,16 +39,9 @@ function ConcentrationGame() {
 
   var game = this;
 
-  this.game_states = {
-    'loading_assets': LoadingAssetsState,
-    'initializing': InitializingState,
-    'main': MainState,
-    'one_flipped': OneFlippedState
-    // two flipped
-    // win
-  };
-
-  this.state_name = 'loading_assets'; // loading_assets should be initial state
+  // consume all_states
+  this.game_states = get_all_states();
+  this.state_name = this.game_states.__initial__; // loading_assets should be initial state
   this.state = null;
 
   // transition methods
