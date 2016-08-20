@@ -79,8 +79,8 @@ function InitializingState(game) {
       first_tile.sibling = second_tile;
       second_tile.sibling = first_tile;
 
-      this.game.stage.addChild(first_tile.sprite);
-      this.game.stage.addChild(second_tile.sprite);
+      this.game.stage.addChild(first_tile);
+      this.game.stage.addChild(second_tile);
 
       this.game.tiles.push(first_tile);
       this.game.tiles.push(second_tile);
