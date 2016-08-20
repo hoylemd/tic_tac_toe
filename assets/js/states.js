@@ -183,28 +183,38 @@ function OneFlippedState(game) {
     game.second_flipped_tile = object;
     object.flip_up();
 
-    if (object.sibling == game.flipped_tile) {
+    if (object.sibling === game.flipped_tile) {
+      console.log('You matched the' + object.name + ' tiles! Great job!');
 
+      object.solve();
+      game.flipped_tile.solve();
+
+      game.transition_state('main');
+    } else {
+      console.log('You flipped a ' + game.second_flipped_tile.name + ' tile,' +
+                  ' but it doesn\'t match the ' + game.flipped_tile.name +
+                  ' that you flipped first!');
+
+      game.transition_state('mistake');
     }
   }
+  this.event_handlers = {
+    'tile_flipped': tile_flipped
+  }
 }
+
 OneFlippedState.prototype = Object.create(GameState.prototype);
 all_states['one_flipped'] = OneFlippedState;
 
-function TwoFlippedWrongState(game) {
+function MistakeState(game) {
   GameState.call(this, game);
 
-  this.name = 'two_flipped_wrong';
+  this.name = 'mistake';
 
   var ms_to_flip = 3000;
+  var next_update = 3;
 
-  this.update = function TwoFlippedWrongState_update(timedelta) {
-    if (ms_to_flip === 3000) {
-      console.log('You flipped a ' + game.second_flipped_tile.name + ' tile,' +
-                  ' but it doesn\'t match the ' + game.flipped_tile.name +
-                  ' that you flipped first! Try again in 3 seconds.');
-    }
-
+  this.update = function MistakeState_update(timedelta) {
     ms_to_flip -= timedelta;
 
     if (ms_to_flip <= 0) {
@@ -217,11 +227,17 @@ function TwoFlippedWrongState(game) {
       console.log('Time\'s up! Try again!');
 
       game.transition_state('main');
+    } else {
+      if (ms_to_flip < next_update * 1000) {
+        console.log('' + next_update + ' seconds until you may try again');
+        next_update -= 1;
+      }
     }
+
   };
 }
-TwoFlippedWrongState.prototype = Object.create(GameState.prototype);
-all_states['two_flipped_wrong'] = TwoFlippedWrongState;
+MistakeState.prototype = Object.create(GameState.prototype);
+all_states['mistake'] = MistakeState;
 
 function get_all_states() {
   all_states.__initial__ = 'loading_assets';

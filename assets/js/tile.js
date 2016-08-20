@@ -53,12 +53,19 @@ function Tile(tile_name, texture_name) {
     }
   };
 
+  this.solve = function Tile_solve() {
+    this.flip_up();
+    this.solved = true;
+  }
+
   // Input handlers
   this.interactive = true;
 
   var that = this
   function onClicked() {
-    that.events['tile_flipped'] = [];
+    if (!this.solved) {
+      that.events['tile_flipped'] = [];
+    }
   }
 
   // Set interactions
