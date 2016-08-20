@@ -2,6 +2,57 @@
 //   random_int(min, max)
 // from tile.js:
 //   Tile
+function GameState(game) {
+  this.game = game;
+};
+GameState.prototype = {
+  name: 'Unnamed State',
+
+  game: null,
+
+  update: function base_state_update(timedelta) {
+    console.log("Update called on " + this.name + " state, which doesn't " +
+                "have it's own update defined.");
+  },
+
+  event_handlers: [],
+  handle_event: function base_state_handle_event(event, object, parameters) {
+    if (this.event_handlers[event]) {
+      this.event_handlers[event](object, parameters);
+    }
+  }
+};
+
+function LoadingAssetsState(game) {
+  GameState.call(this, game);
+
+  this.name = 'loading_assets';
+
+  this.loading_started = false;
+  this.loading_done = false;
+
+  this.update =  function LoadingAssets_update(timedelta) {
+    if (!this.loading_started) {
+      console.log("Loading assets...")
+
+      var that = this;
+      function done_loading() {
+        that.loading_done = true;
+      }
+
+      PIXI.loader.add(this.game.textures)
+                 .add(this.game.texture_atlases)
+                 .load(done_loading);
+      this.loading_started = true;
+    } else if (this.loading_done){
+      console.log("done loading assets!");
+      this.game.transition_state('initializing');
+    } else {
+      console.log("still loading...");
+    }
+  };
+}
+LoadingAssetsState.prototype = Object.create(GameState.prototype);
 
 function ConcentrationGame() {
   // Constants
@@ -29,6 +80,7 @@ function ConcentrationGame() {
 
   // game objects
   this.tiles = [];
+  this.flipped_tile = null;
   this.game_objects = [];
 
   // Add the canvas to the DOM
@@ -37,37 +89,13 @@ function ConcentrationGame() {
   /* Constructor Ends */
 
   /* Game states */
-  this.done_loading = false;
 
   var game = this;
-  function loading_assets_state() {
-    this.name = 'loading_assets';
-    this.loading_started = false;
-    var loading = true;
-
-    function done_loading() {
-      loading = false;
-    };
-
-    function loading_assets_update(timedelta) {
-      if (!this.loading_started) {
-        console.log("Loading assets...")
-        PIXI.loader.add(game.textures)
-                   .add(game.texture_atlases)
-                   .load(done_loading);
-        this.loading_started = true;
-      } else if (loading){
-        console.log("still loading...");
-      } else {
-        console.log("done loading assets!");
-        game.transition_state('initializing');
-      }
-    }
-    this.update = loading_assets_update;
-  }
 
   function initializing_state() {
-    this.name = 'initializing'
+    var obj = Object.create(_state_prototype);
+
+    obj.name = 'initializing'
 
     function initializing_update(timedelta) {
       // don't initialize until assets are loaded
@@ -117,22 +145,38 @@ function ConcentrationGame() {
 
       game.transition_state('main');
     }
+    obj.update = initializing_update;
 
-    this.update = initializing_update;
+    return obj;
   }
 
   function main_state() {
+    this.prototype = _state_prototype;
+
     this.name = 'main';
 
     function main_update(timedelta) {
       console.log("Click a tile!");
     }
 
+    // events
+    function tile_flipped(object, parameters) {
+      game.flipped_tile = object;
+      game.transition_state('one_flipped');
+    }
+
+    this.event_handlers = {
+      'tile_flipped': tile_flipped
+    }
+
     this.update = main_update;
   }
 
   function one_flipped_state() {
+    this.prototype = _state_prototype;
+
     this.name = 'one_flipped';
+    var ms_to_flip = 5000;
 
     function one_flipped_update(timedelta) {
       console.log("You flipped a tile!");
@@ -143,7 +187,7 @@ function ConcentrationGame() {
   }
 
   this.game_states = {
-    'loading_assets': loading_assets_state,
+    'loading_assets': LoadingAssetsState,
     'initializing': initializing_state,
     'main': main_state,
     'one_flipped': one_flipped_state
@@ -154,15 +198,6 @@ function ConcentrationGame() {
   this.state_name = 'loading_assets'; // loading_assets should be initial state
   this.state = null;
 
-  // events
-  function tile_flipped(object, parameters) {
-    game.transition_state('one_flipped');
-  }
-
-  this.events = {
-    'tile_flipped': tile_flipped
-  }
-
   // transition methods
   this.transitioning = true;
   function transition_state(next_state) {
@@ -170,6 +205,9 @@ function ConcentrationGame() {
     this.transitioning = true;
   }
   this.transition_state = transition_state;
+
+  // global events
+  this.events = {};
 
   // Main driver method
   function update(timedelta) {
@@ -185,11 +223,12 @@ function ConcentrationGame() {
       var events = object.update(timedelta);
 
       for (var event in events) {
-        if (this.events[event]) {
+        var handled = this.state.handle_event(event, object, events[event]);
+        if (!handled && this.events[event]) {
           var handler = this.events[event];
           handler(object, events[event]);
         } else {
-          throw "Event '" + event + "' is not known!!!";
+          throw "Unhandled Event '" + event + "'.";
         }
       };
     }
@@ -199,7 +238,7 @@ function ConcentrationGame() {
 
     // transition state
     if (this.transitioning) {
-      this.state = new this.game_states[this.state_name]();
+      this.state = new this.game_states[this.state_name](this);
       this.transitioning = false;
     }
 
