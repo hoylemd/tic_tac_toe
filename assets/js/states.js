@@ -189,6 +189,15 @@ function OneFlippedState(game) {
       object.solve();
       game.flipped_tile.solve();
 
+      var all_solved = true;
+      for (var i in game.tiles) {
+        all_solved = all_solved && game.tiles[i].solved;
+      }
+
+      if (all_solved) {
+        console.log("Great job! You got them all!");
+      }
+
       game.transition_state('main');
     } else {
       console.log('You flipped a ' + game.second_flipped_tile.name + ' tile,' +
