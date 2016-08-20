@@ -58,10 +58,7 @@ function Tile(tile_name, texture_name) {
 
   var that = this
   function onClicked() {
-    if (!that.flipped_up) {
-      that.flip_up();
-      that.events['tile_flipped'] = [];
-    }
+    that.events['tile_flipped'] = [];
   }
 
   // Set interactions

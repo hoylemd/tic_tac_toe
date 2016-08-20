@@ -130,6 +130,9 @@ function MainState(game) {
   // events
   function tile_flipped(object, parameters) {
     this.game.flipped_tile = object;
+
+    object.flip_up();
+
     this.game.transition_state('one_flipped');
   }
 
@@ -150,7 +153,6 @@ function OneFlippedState(game) {
     if (ms_to_flip === 5000) {
       console.log('You flipped a ' + game.flipped_tile.name + ' tile!');
     };
-
 
     ms_to_flip -= timedelta;
 
