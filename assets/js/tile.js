@@ -34,16 +34,24 @@ function Tile(tile_name, texture_name) {
   }
 
   this.update = function Tile_update(timedelta) {
-    if (this.flipped_up) {
-      this.texture = this.front_texture;
-    } else {
-      this.texture = this.back_texture;
-    }
-
     var new_events = this.events;
     this.events = {};
     return new_events;
   }
+
+  this.flip_up = function Tile_flip_up() {
+    if (!this.flipped_up) {
+      this.flipped_up = true;
+      this.texture = this.front_texture
+    }
+  };
+
+  this.flip_down = function Tile_flip_down() {
+    if (this.flipped_up) {
+      this.flipped_up = false;
+      this.texture = this.back_texture
+    }
+  };
 
   // Input handlers
   this.interactive = true;
@@ -51,7 +59,7 @@ function Tile(tile_name, texture_name) {
   var that = this
   function onClicked() {
     if (!that.flipped_up) {
-      that.flipped_up = true;
+      that.flip_up();
       that.events['tile_flipped'] = [];
     }
   }

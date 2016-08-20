@@ -14,8 +14,8 @@ GameState.prototype = {
   game: null,
 
   update: function base_state_update(timedelta) {
-    console.log("Update called on " + this.name + " state, which doesn't " +
-                "have it's own update defined.");
+    console.log('Update called on ' + this.name + ' state, which doesn\'t ' +
+                'have it\'s own update defined.');
   },
 
   event_handlers: [],
@@ -39,7 +39,7 @@ function LoadingAssetsState(game) {
 
   this.update =  function LoadingAssets_update(timedelta) {
     if (!this.loading_started) {
-      console.log("Loading assets...")
+      console.log('Loading assets...')
 
       var that = this;
       function done_loading() {
@@ -56,10 +56,10 @@ function LoadingAssetsState(game) {
                  .load(done_loading);
       this.loading_started = true;
     } else if (this.loading_done){
-      console.log("done loading assets!");
+      console.log('done loading assets!');
       this.game.transition_state('initializing');
     } else {
-      console.log("still loading...");
+      console.log('still loading...');
     }
   };
 }
@@ -100,10 +100,6 @@ function InitializingState(game) {
       var swap_tile = tiles[i];
       var swap_index = random_int(0, tiles.length);
 
-      /* console.log("swapping tile " + i + "(" + first_tile.name + ")" +
-                  " with tile " + swap_index + "(" + second_tile.name + ")");
-      */
-
       tiles[i] = tiles[swap_index];
       tiles[swap_index] = swap_tile;;
     }
@@ -113,7 +109,7 @@ function InitializingState(game) {
       var tile = tiles[i];
       var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
       var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
-      // console.log("moving " + tile.name + " to (" + x + ", " + y + ")");
+
       tile.move_to(x, y);
     }
 
@@ -128,7 +124,7 @@ function MainState(game) {
   this.name = 'main';
 
   this.update = function MainState_update(timedelta) {
-    console.log("Click a tile!");
+    console.log('Click a tile!');
   }
 
   // events
@@ -151,8 +147,21 @@ function OneFlippedState(game) {
   var ms_to_flip = 5000;
 
   this.update = function OneFlippedState_update(timedelta) {
-    console.log("You flipped a " + this.game.flipped_tile.name + " tile!");
-    game.transition_state('main');
+    if (ms_to_flip === 5000) {
+      console.log('You flipped a ' + game.flipped_tile.name + ' tile!');
+    };
+
+
+    ms_to_flip -= timedelta;
+
+    if (ms_to_flip <= 0) {
+      game.flipped_tile.flip_down();
+      game.flipped_tile = null;
+
+      console.log('Time\'s up!');
+
+      game.transition_state('main');
+    }
   }
 }
 OneFlippedState.prototype = Object.create(GameState.prototype);

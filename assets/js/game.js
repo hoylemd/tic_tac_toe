@@ -83,7 +83,7 @@ function ConcentrationGame() {
             var handler = this.events[event];
             handler(object, events[event]);
           } else {
-            throw "Unhandled Event '" + event + "'.";
+            console.warn("Unhandled Event '" + event + "'.");
           }
         }
       };
