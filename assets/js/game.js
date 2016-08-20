@@ -40,6 +40,7 @@ function LoadingAssetsState(game) {
         that.loading_done = true;
       }
 
+      // TODO: These assets could be defined here...
       PIXI.loader.add(this.game.textures)
                  .add(this.game.texture_atlases)
                  .load(done_loading);
@@ -53,6 +54,63 @@ function LoadingAssetsState(game) {
   };
 }
 LoadingAssetsState.prototype = Object.create(GameState.prototype);
+
+function InitializingState(game) {
+  GameState.call(this, game);
+
+  this.name = 'initializing';
+
+  this.update = function InitializingState_update(timedelta) {
+    // don't initialize until assets are loaded
+    var symbol_names = ['A', 'Apophis', 'Delta', 'Earth',
+                        'Gamma', 'Omega', 'Sigma', 'Theta'];
+    // create the tile pairs
+    for (var i in symbol_names) {
+      var texture_name = 'tile_' + symbol_names[i] + '.png';
+      var first_tile = new Tile(texture_name);
+      var second_tile = new Tile(texture_name);
+
+      first_tile.sibling = second_tile;
+      second_tile.sibling = first_tile;
+
+      this.game.stage.addChild(first_tile.sprite);
+      this.game.stage.addChild(second_tile.sprite);
+
+      this.game.tiles.push(first_tile);
+      this.game.tiles.push(second_tile);
+
+      this.game.game_objects.push(first_tile);
+      this.game.game_objects.push(second_tile);
+    }
+
+    var tiles = this.game.tiles;
+
+    // shuffle the tiles
+    for (var i in tiles) {
+      var swap_tile = tiles[i];
+      var swap_index = random_int(0, tiles.length);
+
+      /* console.log("swapping tile " + i + "(" + first_tile.name + ")" +
+                  " with tile " + swap_index + "(" + second_tile.name + ")");
+      */
+
+      tiles[i] = tiles[swap_index];
+      tiles[swap_index] = swap_tile;;
+    }
+
+    // position the tiles
+    for (var i in tiles) {
+      var tile = tiles[i];
+      var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
+      var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
+      // console.log("moving " + tile.name + " to (" + x + ", " + y + ")");
+      tile.move_to(x, y);
+    }
+
+    this.game.transition_state('main');
+  };
+}
+InitializingState.prototype = Object.create(GameState.prototype);
 
 function ConcentrationGame() {
   // Constants
@@ -92,65 +150,8 @@ function ConcentrationGame() {
 
   var game = this;
 
-  function initializing_state() {
-    var obj = Object.create(_state_prototype);
 
-    obj.name = 'initializing'
-
-    function initializing_update(timedelta) {
-      // don't initialize until assets are loaded
-      var symbol_names = ['A', 'Apophis', 'Delta', 'Earth',
-                          'Gamma', 'Omega', 'Sigma', 'Theta'];
-      // create the tile pairs
-      for (var i in symbol_names) {
-        var texture_name = 'tile_' + symbol_names[i] + '.png';
-        var first_tile = new Tile(texture_name);
-        var second_tile = new Tile(texture_name);
-
-        first_tile.sibling = second_tile;
-        second_tile.sibling = first_tile;
-
-        game.stage.addChild(first_tile.sprite);
-        game.stage.addChild(second_tile.sprite);
-
-        game.tiles.push(first_tile);
-        game.tiles.push(second_tile);
-
-        game.game_objects.push(first_tile);
-        game.game_objects.push(second_tile);
-      }
-
-      // shuffle the tiles
-      for (var i in game.tiles) {
-        var first_tile = game.tiles[i];
-        var swap_index = random_int(0, game.tiles.length);
-        var second_tile = game.tiles[swap_index];
-
-        /* console.log("swapping tile " + i + "(" + first_tile.name + ")" +
-                    " with tile " + swap_index + "(" + second_tile.name + ")");
-        */
-
-        game.tiles[swap_index] = first_tile;
-        game.tiles[i] = second_tile;
-      }
-
-      // position the tiles
-      for (var i in game.tiles) {
-        var tile = game.tiles[i];
-        var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
-        var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
-        // console.log("moving " + tile.name + " to (" + x + ", " + y + ")");
-        tile.move_to(x, y);
-      }
-
-      game.transition_state('main');
-    }
-    obj.update = initializing_update;
-
-    return obj;
-  }
-
-  function main_state() {
+   function main_state() {
     this.prototype = _state_prototype;
 
     this.name = 'main';
@@ -188,7 +189,7 @@ function ConcentrationGame() {
 
   this.game_states = {
     'loading_assets': LoadingAssetsState,
-    'initializing': initializing_state,
+    'initializing': InitializingState,
     'main': main_state,
     'one_flipped': one_flipped_state
     // two flipped
