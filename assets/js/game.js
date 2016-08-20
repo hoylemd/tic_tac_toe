@@ -17,9 +17,12 @@ GameState.prototype = {
 
   event_handlers: [],
   handle_event: function base_state_handle_event(event, object, parameters) {
-    if (this.event_handlers[event]) {
-      this.event_handlers[event](object, parameters);
+    var handler = this.event_handlers[event]
+    if (handler) {
+      handler.call(this, object, parameters);
+      return true;
     }
+    return false;
   }
 };
 
@@ -112,6 +115,41 @@ function InitializingState(game) {
 }
 InitializingState.prototype = Object.create(GameState.prototype);
 
+function MainState(game) {
+  GameState.call(this, game);
+
+  this.name = 'main';
+
+  this.update = function MainState_update(timedelta) {
+    console.log("Click a tile!");
+  }
+
+  // events
+  function tile_flipped(object, parameters) {
+    this.game.flipped_tile = object;
+    this.game.transition_state('one_flipped');
+  }
+
+  this.event_handlers = {
+    'tile_flipped': tile_flipped
+  }
+}
+MainState.prototype = Object.create(GameState.prototype);
+
+function OneFlippedState(game) {
+  GameState.call(this, game);
+
+  this.name = 'one_flipped';
+
+  var ms_to_flip = 5000;
+
+  this.update = function OneFlippedState_update(timedelta) {
+    console.log("You flipped a " + this.game.flipped_tile.name + " tile!");
+    game.transition_state('main');
+  }
+}
+OneFlippedState.prototype = Object.create(GameState.prototype);
+
 function ConcentrationGame() {
   // Constants
   var TILE_COLUMNS = 4;
@@ -150,48 +188,11 @@ function ConcentrationGame() {
 
   var game = this;
 
-
-   function main_state() {
-    this.prototype = _state_prototype;
-
-    this.name = 'main';
-
-    function main_update(timedelta) {
-      console.log("Click a tile!");
-    }
-
-    // events
-    function tile_flipped(object, parameters) {
-      game.flipped_tile = object;
-      game.transition_state('one_flipped');
-    }
-
-    this.event_handlers = {
-      'tile_flipped': tile_flipped
-    }
-
-    this.update = main_update;
-  }
-
-  function one_flipped_state() {
-    this.prototype = _state_prototype;
-
-    this.name = 'one_flipped';
-    var ms_to_flip = 5000;
-
-    function one_flipped_update(timedelta) {
-      console.log("You flipped a tile!");
-      game.transition_state('main');
-    }
-
-    this.update = one_flipped_update;
-  }
-
   this.game_states = {
     'loading_assets': LoadingAssetsState,
     'initializing': InitializingState,
-    'main': main_state,
-    'one_flipped': one_flipped_state
+    'main': MainState,
+    'one_flipped': OneFlippedState
     // two flipped
     // win
   };
@@ -224,12 +225,13 @@ function ConcentrationGame() {
       var events = object.update(timedelta);
 
       for (var event in events) {
-        var handled = this.state.handle_event(event, object, events[event]);
-        if (!handled && this.events[event]) {
-          var handler = this.events[event];
-          handler(object, events[event]);
-        } else {
-          throw "Unhandled Event '" + event + "'.";
+        if (!this.state.handle_event(event, object, events[event])) {
+          if (this.events[event]) {
+            var handler = this.events[event];
+            handler(object, events[event]);
+          } else {
+            throw "Unhandled Event '" + event + "'.";
+          }
         }
       };
     }
