@@ -6,13 +6,12 @@
 // Alias
 var TextureCache = PIXI.utils.TextureCache;
 
-var TILE_WIDTH = 64;
-var TILE_HEIGHT = 64;
+var TILE_WIDTH = 128;
+var TILE_HEIGHT = 128;
 
 
-function Tile(tile_name, texture_name) {
-  var back_texture = TextureCache['tile_Back.png'];
-  PIXI.Sprite.call(this, back_texture);
+function Tile() {
+  PIXI.Sprite.call(this, TextureCache['']);
 
   this.name = tile_name;
   this.events = {}; // Events have a name (string key) and an array of arguments

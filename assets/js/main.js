@@ -1,10 +1,10 @@
 // from utils.js
 //   what_time_is_it()
 // from game.js:
-//   ConcentrationGame
+//   Game
 
 function main() {
-  var game = new ConcentrationGame();
+  var game = new Game();
   game.start_time = what_time_is_it();
 
   function main_loop() {

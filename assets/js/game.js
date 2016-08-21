@@ -4,7 +4,7 @@
 //   Tile
 // from states.js:
 //   get_all_states()
-function ConcentrationGame() {
+function Game() {
   // Constants
   var TILE_COLUMNS = 4;
   var TILE_ROWS = 4;
@@ -15,29 +15,18 @@ function ConcentrationGame() {
   this.last_timestamp = 0;
   this.running_time = 0;
 
-  this.renderer = PIXI.autoDetectRenderer(
-    TILE_COLUMNS * Tile.TILE_WIDTH,
-    TILE_ROWS * Tile.TILE_HEIGHT);
+  this.width = 3 * Tile.TILE_WIDTH + 2;
+  this.height = 3 * Tile.TILE_HEIGHT + 2;
+
+  this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
   this.renderer.backgroundColor = BACKGROUND_COLOUR;
 
   this.stage = new PIXI.Container();
 
   this.renderer.render(this.stage);
 
-  // game objects
-  this.tiles = [];
-  this.flipped_tile = null;
-  this.second_flipped_tile = null;
-  this.game_objects = [];
-
   // Add the canvas to the DOM
   document.body.appendChild(this.renderer.view);
-
-  /* Constructor Ends */
-
-  /* Game states */
-
-  var game = this;
 
   // consume all_states
   this.game_states = get_all_states();
@@ -51,9 +40,6 @@ function ConcentrationGame() {
     this.transitioning = true;
   }
   this.transition_state = transition_state;
-
-  // global events
-  this.events = {};
 
   // Main driver method
   function update(timedelta) {
@@ -70,12 +56,7 @@ function ConcentrationGame() {
 
       for (var event in events) {
         if (!this.state.handle_event(event, object, events[event])) {
-          if (this.events[event]) {
-            var handler = this.events[event];
-            handler(object, events[event]);
-          } else {
-            console.warn("Unhandled Event '" + event + "'.");
-          }
+          console.warn("Unhandled Event '" + event + "'.");
         }
       };
     }

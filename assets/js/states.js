@@ -51,7 +51,7 @@ function LoadingAssetsState(game) {
 
       // Define Textures and Atlases to load here
       var textures = [];
-      var texture_atlases = ['assets/sprites/symbols.json'];
+      var texture_atlases = ['assets/sprites/marks.json'];
       // Done defining Textures and Atlases
 
       PIXI.loader.add(textures)
@@ -69,55 +69,29 @@ function LoadingAssetsState(game) {
 LoadingAssetsState.prototype = Object.create(GameState.prototype);
 all_states['loading_assets'] = LoadingAssetsState;
 
-function set_up_tiles(tiles) {
-    for (var i in tiles) {
-      var swap_tile = tiles[i];
-      var swap_index = random_int(0, tiles.length);
-
-      tiles[i] = tiles[swap_index];
-      tiles[swap_index] = swap_tile;;
-    }
-
-    for (var i in tiles) {
-      var tile = tiles[i];
-      var x = Math.floor(i % 4) * Tile.TILE_WIDTH;
-      var y = Math.floor(i / 4) * Tile.TILE_HEIGHT;
-
-      tile.move_to(x, y);
-      tile.flip_down();
-      tile.solved = false;
-    }
-}
-
 function InitializingState(game) {
   GameState.call(this, game);
 
   this.name = 'initializing';
 
   this.update = function InitializingState_update(timedelta) {
-    // don't initialize until assets are loaded
-    var symbol_names = ['A', 'Apophis', 'Delta', 'Earth',
-                        'Gamma', 'Omega', 'Sigma', 'Theta'];
-    // create the tile pairs
-    for (var i in symbol_names) {
-      var texture_name = 'tile_' + symbol_names[i] + '.png';
-      var first_tile = new Tile(symbol_names[i], texture_name);
-      var second_tile = new Tile(symbol_names[i], texture_name);
 
-      first_tile.sibling = second_tile;
-      second_tile.sibling = first_tile;
+    var lines = new PIXI.Graphics();
+    lines.lineStyle(2, 0x000000, 1);
 
-      this.game.stage.addChild(first_tile);
-      this.game.stage.addChild(second_tile);
+    lines.moveTo(Tile.TILE_WIDTH + 1, 0);
+    lines.lineTo(Tile.TILE_WIDTH + 1, game.height);
 
-      this.game.tiles.push(first_tile);
-      this.game.tiles.push(second_tile);
+    lines.moveTo(2 * (Tile.TILE_WIDTH + 1), 0);
+    lines.lineTo(2 * (Tile.TILE_WIDTH + 1), game.height);
 
-      this.game.game_objects.push(first_tile);
-      this.game.game_objects.push(second_tile);
-    }
+    lines.moveTo(0, Tile.TILE_WIDTH + 1);
+    lines.lineTo(game.width, Tile.TILE_WIDTH + 1);
 
-    set_up_tiles(game.tiles);
+    lines.moveTo(0, 2 * (Tile.TILE_WIDTH + 1));
+    lines.lineTo(game.width, 2 * (Tile.TILE_WIDTH + 1));
+
+    game.stage.addChild(lines);
 
     this.game.transition_state('main');
   };
@@ -134,148 +108,11 @@ function MainState(game) {
     console.log('Click a tile!');
   }
 
-  // events
-  function tile_flipped(object, parameters) {
-    this.game.flipped_tile = object;
-
-    object.flip_up();
-
-    this.game.transition_state('one_flipped');
-  }
-
   this.event_handlers = {
-    'tile_flipped': tile_flipped
   }
 }
 MainState.prototype = Object.create(GameState.prototype);
 all_states['main'] = MainState;
-
-function OneFlippedState(game) {
-  GameState.call(this, game);
-
-  this.name = 'one_flipped';
-
-  var timeout = 5000;
-  var next_update = 5;
-
-  this.update = function OneFlippedState_update(timedelta) {
-    if (timeout === 5000) {
-      console.log('You flipped a ' + game.flipped_tile.name + ' tile!');
-    };
-
-    timeout -= timedelta;
-
-    if (timeout <= 0) {
-      game.flipped_tile.flip_down();
-      game.flipped_tile = null;
-
-      console.log('Time\'s up!');
-
-      game.transition_state('main');
-    } else {
-      if (timeout < next_update * 1000) {
-        console.log('' + next_update + ' seconds left to make a choice...');
-        next_update -= 1;
-      }
-    }
-
-  };
-
-  function tile_flipped(object, parameters) {
-    game.second_flipped_tile = object;
-    object.flip_up();
-
-    if (object.sibling === game.flipped_tile) {
-      console.log('You matched the' + object.name + ' tiles! Great job!');
-
-      object.solve();
-      game.flipped_tile.solve();
-
-      var all_solved = true;
-      for (var i in game.tiles) {
-        all_solved = all_solved && game.tiles[i].solved;
-      }
-
-      if (all_solved) {
-        console.log("Great job! You got them all!");
-        game.transition_state('win');
-      } else {
-        game.transition_state('main');
-      }
-    } else {
-      console.log('You flipped a ' + game.second_flipped_tile.name + ' tile,' +
-                  ' but it doesn\'t match the ' + game.flipped_tile.name +
-                  ' that you flipped first!');
-
-      game.transition_state('mistake');
-    }
-  }
-  this.event_handlers = {
-    'tile_flipped': tile_flipped
-  }
-}
-
-OneFlippedState.prototype = Object.create(GameState.prototype);
-all_states['one_flipped'] = OneFlippedState;
-
-function MistakeState(game) {
-  GameState.call(this, game);
-
-  this.name = 'mistake';
-
-  var timeout = 3000;
-  var next_update = 3;
-
-  this.update = function MistakeState_update(timedelta) {
-    timeout -= timedelta;
-
-    if (timeout <= 0) {
-      game.flipped_tile.flip_down();
-      game.flipped_tile = null;
-
-      game.second_flipped_tile.flip_down();
-      game.second_flipped_tile.flip_down();
-
-      console.log('Time\'s up! Try again!');
-
-      game.transition_state('main');
-    } else {
-      if (timeout < next_update * 1000) {
-        console.log('' + next_update + ' seconds until you may try again');
-        next_update -= 1;
-      }
-    }
-
-  };
-}
-MistakeState.prototype = Object.create(GameState.prototype);
-all_states['mistake'] = MistakeState;
-
-function WinState(game) {
-  GameState.call(this, game);
-
-  this.name = 'win';
-
-  var timeout = 5000;
-  var next_update = 5;
-
-  this.update = function WinState_update(timedelta) {
-    timeout -= timedelta;
-
-    if (timeout <= 0) {
-      console.log('Restarting the game!');
-      set_up_tiles(game.tiles);
-      game.transition_state('main');
-    } else {
-      if (timeout < next_update * 1000) {
-        console.log('' + next_update + ' seconds until the game resets');
-        next_update -= 1;
-      }
-    }
-  };
-}
-WinState.prototype = Object.create(GameState.prototype);
-all_states['win'] = WinState;
 
 function get_all_states() {
   all_states.__initial__ = 'loading_assets';

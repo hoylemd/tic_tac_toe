@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.3</string>
         <key>fileName</key>
-        <string>/Users/hoylemd/concentration/assets/sprites/symbols.tps</string>
+        <string>/Users/hoylemd/tic_tac_toe/assets/sprites/marks.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -106,7 +106,7 @@
             <key>sizeConstraints</key>
             <enum type="AlgorithmSettings::SizeConstraints">AnySize</enum>
             <key>forceSquared</key>
-            <true/>
+            <false/>
             <key>maxRects</key>
             <struct type="AlgorithmMaxRectsSettings">
                 <key>heuristic</key>
@@ -141,7 +141,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>symbols.json</filename>
+                <filename></filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -188,15 +188,8 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../images/tile_A.png</key>
-            <key type="filename">../images/tile_Apophis.png</key>
-            <key type="filename">../images/tile_Back.png</key>
-            <key type="filename">../images/tile_Delta.png</key>
-            <key type="filename">../images/tile_Earth.png</key>
-            <key type="filename">../images/tile_Gamma.png</key>
-            <key type="filename">../images/tile_Omega.png</key>
-            <key type="filename">../images/tile_Sigma.png</key>
-            <key type="filename">../images/tile_Theta.png</key>
+            <key type="filename">../images/O.png</key>
+            <key type="filename">../images/X.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -204,15 +197,8 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../images/tile_A.png</filename>
-            <filename>../images/tile_Apophis.png</filename>
-            <filename>../images/tile_Delta.png</filename>
-            <filename>../images/tile_Earth.png</filename>
-            <filename>../images/tile_Gamma.png</filename>
-            <filename>../images/tile_Omega.png</filename>
-            <filename>../images/tile_Sigma.png</filename>
-            <filename>../images/tile_Theta.png</filename>
-            <filename>../images/tile_Back.png</filename>
+            <filename>../images/O.png</filename>
+            <filename>../images/X.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
