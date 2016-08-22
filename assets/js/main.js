@@ -1,7 +1,7 @@
 // from utils.js
 //   what_time_is_it()
-// from game.js:
-//   Game
+// from tic_tac_toe.js:
+//   TicTacToeGame
 
 function main() {
   var game = new TicTacToeGame();
