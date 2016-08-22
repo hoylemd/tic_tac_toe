@@ -10,27 +10,21 @@ var TILE_WIDTH = 128;
 var TILE_HEIGHT = 128;
 
 
-function Tile() {
-  PIXI.Sprite.call(this, TextureCache['']);
+function Tile(column, row) {
+  var x_texture = TextureCache['X.png'];
+  var o_texture = TextureCache['O.png'];
 
-  this.name = tile_name;
+  PIXI.Sprite.call(this, x_texture);
+  this.visible = true;
+
   this.events = {}; // Events have a name (string key) and an array of arguments
 
-  this.sibling = null;
-  this.flipped_up = false;
-  this.solved = false;
+  this.owner = null;
 
-  this.x = 0;
-  this.y = 0;
-
-  this.front_texture = TextureCache[texture_name];
-  this.back_texture = back_texture
-
-  // Methods
-  this.move_to = function Tile_move_to(x, y) {
-    this.x = x;
-    this.y = y;
-  }
+  this.column = column;
+  this.x = column + (TILE_WIDTH * column);
+  this.row = row;
+  this.x = row + (TILE_WIDTH * row);
 
   this.update = function Tile_update(timedelta) {
     var new_events = this.events;
@@ -38,33 +32,25 @@ function Tile() {
     return new_events;
   }
 
-  this.flip_up = function Tile_flip_up() {
-    if (!this.flipped_up) {
-      this.flipped_up = true;
-      this.texture = this.front_texture
+  this.claim = function Tile_claim(owner) {
+    this.owner = owner;
+    if (owner === 'player') {
+      this.texture = x_texture;
+      this.visible = true;
+    } else if (owner == 'ai') {
+      this.texture = o_texture;
+      this.visible = true;
+    } else {
+      this.visible = false;
     }
   };
-
-  this.flip_down = function Tile_flip_down() {
-    if (this.flipped_up) {
-      this.flipped_up = false;
-      this.texture = this.back_texture
-    }
-  };
-
-  this.solve = function Tile_solve() {
-    this.flip_up();
-    this.solved = true;
-  }
 
   // Input handlers
   this.interactive = true;
 
   var that = this
   function onClicked() {
-    if (!this.solved) {
-      that.events['tile_flipped'] = [];
-    }
+    that.events['claim'] = [];
   }
 
   // Set interactions
