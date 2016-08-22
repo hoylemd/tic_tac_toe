@@ -108,11 +108,36 @@ function MainState(game) {
     console.log('Click a tile!');
   }
 
+  function claim(object, arguments) {
+    object.claim('player');
+    this.transition_state('ai_turn');
+  }
+
   this.event_handlers = {
+    'claim': claim
   }
 }
 MainState.prototype = Object.create(GameState.prototype);
 all_states['main'] = MainState;
+
+function AITurnState(game) {
+  GameState.call(this, game);
+
+  this.name = 'ai_state';
+
+  function choose_tile() {
+    for (var i = 0; i < 9; i += 1) {
+
+    }
+
+    return 'Havent implemented this yet'
+  }
+
+  this.update = function AITurnState_update(timedelta) {
+
+  };
+
+}
 
 function get_all_states() {
   all_states.__initial__ = 'loading_assets';
