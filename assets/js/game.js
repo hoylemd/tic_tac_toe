@@ -5,44 +5,28 @@
 // from states.js:
 //   get_all_states()
 function Game() {
-  // Constants
-  var TILE_COLUMNS = 4;
-  var TILE_ROWS = 4;
+  // excision ends
 
-  var BACKGROUND_COLOUR = 0x999999;
-
-  this.start_time = 0;
-  this.last_timestamp = 0;
-  this.running_time = 0;
-
-  this.width = 3 * Tile.TILE_WIDTH + 2;
-  this.height = 3 * Tile.TILE_HEIGHT + 2;
-
+  // Set up graphics
   this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
-  this.renderer.backgroundColor = BACKGROUND_COLOUR;
-
+  this.renderer.backgroundColor = this.BACKGROUND_COLOUR || 0x999999;
   this.stage = new PIXI.Container();
-
-  this.renderer.render(this.stage);
 
   // Add the canvas to the DOM
   document.body.appendChild(this.renderer.view);
 
-  // consume all_states
+  // get the states
   this.game_states = get_all_states();
-  this.state_name = this.game_states.__initial__; // loading_assets should be initial state
-  this.state = null;
-
-  // transition methods
-  this.transitioning = true;
-  function transition_state(next_state) {
-    this.state_name = next_state;
-    this.transitioning = true;
-  }
-  this.transition_state = transition_state;
+  this.state_name = this.game_states.__initial__;
+}
+Game.prototype = {
+  // timing
+  start_time: 0,
+  last_timestamp: 0,
+  running_time: 0,
 
   // Main driver method
-  function update(timedelta) {
+  update: function Game_update(timedelta) {
 
     // call state update
     if (this.state) {
@@ -71,6 +55,27 @@ function Game() {
     }
 
     this.running_time += timedelta;
+  },
+
+  state: null,
+  state_name: '',
+  transitioning: true,
+  transition: function Game_transition(next_state) {
+    this.state_name = next_state;
+    this.transitioning = true;
   }
-  this.update = update;
+};
+
+function TicTacToeGame() {
+  // game-specific stuff to excise
+  var GRID_COLUMNS = 3;
+  var GRID_ROWS = 3;
+
+  var BACKGROUND_COLOUR = 0x999999;
+
+  this.width = GRID_COLUMNS * Tile.TILE_WIDTH + 2;
+  this.height = GRID_ROWS * Tile.TILE_HEIGHT + 2;
+
+  Game.call(this);
 }
+TicTacToeGame.prototype = Object.create(Game.prototype);

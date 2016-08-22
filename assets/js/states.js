@@ -7,7 +7,7 @@
 
 function GameState(game) {
   this.game = game;
-};
+}
 GameState.prototype = {
   name: 'Unnamed State',
 
@@ -60,7 +60,7 @@ function LoadingAssetsState(game) {
       this.loading_started = true;
     } else if (this.loading_done){
       console.log('done loading assets!');
-      this.game.transition_state('initializing');
+      this.game.transition('initializing');
     } else {
       console.log('still loading...');
     }
@@ -91,9 +91,10 @@ function InitializingState(game) {
     lines.moveTo(0, 2 * (Tile.TILE_WIDTH + 1));
     lines.lineTo(game.width, 2 * (Tile.TILE_WIDTH + 1));
 
+    game.lines = lines;
     game.stage.addChild(lines);
 
-    this.game.transition_state('main');
+    this.game.transition('main');
   };
 }
 InitializingState.prototype = Object.create(GameState.prototype);
@@ -110,7 +111,7 @@ function MainState(game) {
 
   function claim(object, arguments) {
     object.claim('player');
-    this.transition_state('ai_turn');
+    this.transition('ai_turn');
   }
 
   this.event_handlers = {

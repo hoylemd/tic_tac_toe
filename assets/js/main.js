@@ -4,7 +4,7 @@
 //   Game
 
 function main() {
-  var game = new Game();
+  var game = new TicTacToeGame();
   game.start_time = what_time_is_it();
 
   function main_loop() {
