@@ -94,6 +94,21 @@ function InitializingState(game) {
     game.lines = lines;
     game.stage.addChild(lines);
 
+    game.tiles = [];
+    game.grid = [];
+
+    for (var i = 0; i < 3; i += 1) {
+      var new_row = [];
+      for (var j = 0; j < 3; j += 1) {
+        var new_tile = new Tile(i, j);
+        new_row[j] = new_tile;
+        game.tiles.push(new_tile);
+        game.game_objects.push(new_tile);
+        game.stage.addChild(new_tile);
+      }
+      game.grid[i] = new_row;
+    }
+
     this.game.transition('main');
   };
 }
@@ -111,7 +126,7 @@ function MainState(game) {
 
   function claim(object, arguments) {
     object.claim('player');
-    this.transition('ai_turn');
+    this.game.transition('ai_turn');
   }
 
   this.event_handlers = {
@@ -128,17 +143,23 @@ function AITurnState(game) {
 
   function choose_tile() {
     for (var i = 0; i < 9; i += 1) {
-
+      var row = Math.floor(i / 3);
+      var column = i % 3;
+      var tile = game.grid[row][column];
+      if (!tile.owner) {
+        return {x:row, y:column};
+      }
     }
-
-    return 'Havent implemented this yet'
   }
 
   this.update = function AITurnState_update(timedelta) {
-
+    var coordinates = choose_tile();
+    this.game.grid[coordinates.x][coordinates.y].claim('ai');
+    this.game.transition('main');
   };
-
 }
+AITurnState.prototype = Object.create(GameState.prototype);
+all_states['ai_turn'] = AITurnState;
 
 function get_all_states() {
   all_states.__initial__ = 'loading_assets';

@@ -11,10 +11,11 @@ var TILE_HEIGHT = 128;
 
 
 function Tile(column, row) {
+  var none_texture = TextureCache['none.png'];
   var x_texture = TextureCache['X.png'];
   var o_texture = TextureCache['O.png'];
 
-  PIXI.Sprite.call(this, x_texture);
+  PIXI.Sprite.call(this, none_texture);
   this.visible = true;
 
   this.events = {}; // Events have a name (string key) and an array of arguments
@@ -24,7 +25,7 @@ function Tile(column, row) {
   this.column = column;
   this.x = column + (TILE_WIDTH * column);
   this.row = row;
-  this.x = row + (TILE_WIDTH * row);
+  this.y = row + (TILE_WIDTH * row);
 
   this.update = function Tile_update(timedelta) {
     var new_events = this.events;
@@ -34,14 +35,11 @@ function Tile(column, row) {
 
   this.claim = function Tile_claim(owner) {
     this.owner = owner;
+    console.log(owner + " claimed (" + this.column + "," + this.row + ")");
     if (owner === 'player') {
       this.texture = x_texture;
-      this.visible = true;
-    } else if (owner == 'ai') {
+    } else if (owner === 'ai') {
       this.texture = o_texture;
-      this.visible = true;
-    } else {
-      this.visible = false;
     }
   };
 

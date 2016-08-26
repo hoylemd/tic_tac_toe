@@ -25,6 +25,9 @@ Game.prototype = {
   last_timestamp: 0,
   running_time: 0,
 
+  // event objects
+  game_objects: [],
+
   // Main driver method
   update: function Game_update(timedelta) {
 
