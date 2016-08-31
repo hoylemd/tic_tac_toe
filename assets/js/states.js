@@ -14,8 +14,6 @@ GameState.prototype = {
   game: null,
 
   update: function base_state_update(timedelta) {
-    console.log('Update called on ' + this.name + ' state, which doesn\'t ' +
-                'have it\'s own update defined.');
   },
 
   event_handlers: [],
@@ -119,10 +117,6 @@ function MainState(game) {
   GameState.call(this, game);
 
   this.name = 'main';
-
-  this.update = function MainState_update(timedelta) {
-    console.log('Click a tile!');
-  }
 
   function claim(object, arguments) {
     object.claim('player');
