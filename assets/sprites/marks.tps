@@ -86,9 +86,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>2048</int>
+            <int>512</int>
             <key>height</key>
-            <int>2048</int>
+            <int>512</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
@@ -141,7 +141,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>../../../concentration/assets/sprites/marks.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -190,6 +190,8 @@
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">../images/O.png</key>
             <key type="filename">../images/X.png</key>
+            <key type="filename">../images/line.png</key>
+            <key type="filename">../images/none.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -199,6 +201,8 @@
         <array>
             <filename>../images/O.png</filename>
             <filename>../images/X.png</filename>
+            <filename>../images/none.png</filename>
+            <filename>../images/line.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

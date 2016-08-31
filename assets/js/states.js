@@ -113,6 +113,56 @@ function InitializingState(game) {
 InitializingState.prototype = Object.create(GameState.prototype);
 all_states['initializing'] = InitializingState;
 
+function check_for_winner(tile_grid) {
+  var grid = [['','',''],['','',''],['','','']]
+
+  //construct simpler grid
+  for (var i = 0; i < 3; i += 1) {
+    for (var j = 0; j < 3; i += 1) {
+      var tile = tile_grid[i][j];
+      grid[i][j] = tile.owner || '';
+    }
+  }
+
+  for (var i = 0; i < 3; i += 1) {
+    // check vertical
+    if (grid[i][0] === grid[i][1] === grid[i][2]) {
+      return {
+        winner: grid[i][0],
+        direction: 'vertical',
+        position: i
+      };
+    }
+
+    // check horizontal
+    if (grid[0][i] === grid[1][i] === grid[2][i]) {
+      return {
+        winner: grid[i][0],
+        direction: 'horizontal',
+        position: i
+      }
+    }
+  }
+
+  // check diagonal
+  if (grid[0][0] === grid [1][1] == grid[2][2]) {
+    return {
+      winner: grid[0][0],
+      direction: 'diagonal',
+      position: 0
+    }
+  }
+  if (grid[2][0] === grid [1][1] == grid[0][2]) {
+    return {
+      winner: grid[0][0],
+      direction: 'diagonal',
+      position: 1
+    }
+  }
+
+  return null;
+}
+
 function MainState(game) {
   GameState.call(this, game);
 
@@ -120,7 +170,14 @@ function MainState(game) {
 
   function claim(object, arguments) {
     object.claim('player');
-    this.game.transition('ai_turn');
+
+    var result = check_for_winner(game.grid);
+
+    if (result) {
+      this.game.transition('game_over', result);
+    } else {
+      this.game.transition('ai_turn');
+    }
   }
 
   this.event_handlers = {
