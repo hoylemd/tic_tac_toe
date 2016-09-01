@@ -113,12 +113,18 @@ function InitializingState(game) {
 InitializingState.prototype = Object.create(GameState.prototype);
 all_states['initializing'] = InitializingState;
 
+function check_line(first, second, third) {
+  return first && first === second && first === third;
+}
+
 function check_for_winner(tile_grid) {
-  var grid = [['','',''],['','',''],['','','']]
+  var grid = [['','',''],
+              ['','',''],
+              ['','','']]
 
   //construct simpler grid
   for (var i = 0; i < 3; i += 1) {
-    for (var j = 0; j < 3; i += 1) {
+    for (var j = 0; j < 3; j += 1) {
       var tile = tile_grid[i][j];
       grid[i][j] = tile.owner || '';
     }
@@ -126,7 +132,7 @@ function check_for_winner(tile_grid) {
 
   for (var i = 0; i < 3; i += 1) {
     // check vertical
-    if (grid[i][0] === grid[i][1] === grid[i][2]) {
+    if (check_line(grid[i][0], grid[i][1], grid[i][2])) {
       return {
         winner: grid[i][0],
         direction: 'vertical',
@@ -135,7 +141,7 @@ function check_for_winner(tile_grid) {
     }
 
     // check horizontal
-    if (grid[0][i] === grid[1][i] === grid[2][i]) {
+    if (check_line(grid[0][i], grid[1][i], grid[2][i])) {
       return {
         winner: grid[i][0],
         direction: 'horizontal',
@@ -145,14 +151,14 @@ function check_for_winner(tile_grid) {
   }
 
   // check diagonal
-  if (grid[0][0] === grid [1][1] == grid[2][2]) {
+  if (check_line(grid[0][0], grid [1][1], grid[2][2])) {
     return {
       winner: grid[0][0],
       direction: 'diagonal',
       position: 0
     }
   }
-  if (grid[2][0] === grid [1][1] == grid[0][2]) {
+  if (check_line(grid[2][0], grid [1][1], grid[0][2])) {
     return {
       winner: grid[0][0],
       direction: 'diagonal',
@@ -206,11 +212,25 @@ function AITurnState(game) {
   this.update = function AITurnState_update(timedelta) {
     var coordinates = choose_tile();
     this.game.grid[coordinates.x][coordinates.y].claim('ai');
-    this.game.transition('main');
+
+    var result = check_for_winner(game.grid);
+
+    if (result) {
+      this.game.transition('game_over', result);
+    } else {
+      this.game.transition('main');
+    }
   };
 }
 AITurnState.prototype = Object.create(GameState.prototype);
 all_states['ai_turn'] = AITurnState;
+
+function GameOverState(game, arguments) {
+  console.log("Game over! " + arguments.winner + " wins!");
+  console.log(arguments.direction + "ly at position " + arguments.position);
+}
+GameOverState.prototype = Object.create(GameState.prototype);
+all_states['game_over'] = GameOverState;
 
 function get_all_states() {
   all_states.__initial__ = 'loading_assets';

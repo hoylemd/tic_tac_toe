@@ -18,6 +18,7 @@ function Game() {
   // get the states
   this.game_states = get_all_states();
   this.state_name = this.game_states.__initial__;
+  this.transition_arguments = null;
 }
 Game.prototype = {
   // timing
@@ -53,7 +54,9 @@ Game.prototype = {
 
     // transition state
     if (this.transitioning) {
-      this.state = new this.game_states[this.state_name](this);
+      var next_state = this.game_states[this.state_name];
+      this.state = new next_state(this, this.transition_arguments);
+      this.transition_arguments = null;
       this.transitioning = false;
     }
 
@@ -63,8 +66,9 @@ Game.prototype = {
   state: null,
   state_name: '',
   transitioning: true,
-  transition: function Game_transition(next_state) {
+  transition: function Game_transition(next_state, args) {
     this.state_name = next_state;
+    this.transition_arguments = args;
     this.transitioning = true;
   }
 };
