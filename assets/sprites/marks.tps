@@ -141,7 +141,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../../concentration/assets/sprites/marks.json</filename>
+                <filename>marks.json</filename>
             </struct>
         </map>
         <key>multiPack</key>

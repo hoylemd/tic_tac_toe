@@ -357,6 +357,32 @@ function GameOverState(game, arguments) {
     } else {
       game.log("Game over! I win! See? " + arguments.direction + "ly!");
     }
+
+    // create the line sprite
+    var line_texture = TextureCache['line.png'];
+    var line_sprite = new PIXI.Sprite(line_texture);
+    line_sprite.anchor.x = 0.5;
+    line_sprite.anchor.y = 0.5;
+
+    var PI = 3.14159;
+
+    // position it
+    if (arguments.direction === 'horizontal') {
+      line_sprite.x = 1.5 * Tile.TILE_WIDTH;
+      line_sprite.y = Tile.TILE_HEIGHT * (0.5 + arguments.position);
+    }
+    if (arguments.direction === 'vertical') {
+      line_sprite.rotation = 0.5 * PI;
+      line_sprite.x = Tile.TILE_WIDTH * (0.5 + arguments.position);
+      line_sprite.y = 1.5 * Tile.TILE_HEIGHT;
+    }
+    if (arguments.direction === 'diagonal') {
+      line_sprite.rotation = (0.25 + arguments.position) * PI;
+      line_sprite.x = 1.5 * Tile.TILE_WIDTH;
+      line_sprite.y = 1.5 * Tile.TILE_HEIGHT;
+    }
+    game.stage.addChild(line_sprite);
+
   } else {
     game.log("Game over! it's a draw.");
   }

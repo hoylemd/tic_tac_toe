@@ -1,14 +1,14 @@
 {"frames": {
 
-"none.png":
+"line.png":
 {
-	"frame": {"x":0,"y":0,"w":128,"h":128},
+	"frame": {"x":0,"y":128,"w":384,"h":128},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
-	"sourceSize": {"w":128,"h":128}
+	"spriteSourceSize": {"x":0,"y":0,"w":384,"h":128},
+	"sourceSize": {"w":384,"h":128}
 },
-"O.png":
+"none.png":
 {
 	"frame": {"x":128,"y":0,"w":128,"h":128},
 	"rotated": false,
@@ -16,9 +16,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"X.png":
+"O.png":
 {
 	"frame": {"x":256,"y":0,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"X.png":
+{
+	"frame": {"x":0,"y":0,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -29,8 +37,8 @@
 	"version": "1.0",
 	"image": "marks.png",
 	"format": "RGBA8888",
-	"size": {"w":384,"h":128},
+	"size": {"w":384,"h":256},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:286f449e3aa4b1d1c0181b1a5e22d379:5664fa6bda5f93eedbc6080665e34075:8ad9239db259de0886b8073100b6834a$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3c2949865685b8b79789ad56b0d186c8:e9f368eb11b3398dbd582f62fc2ab11d:8ad9239db259de0886b8073100b6834a$"
 }
 }
