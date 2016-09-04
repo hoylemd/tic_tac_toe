@@ -325,6 +325,10 @@ function AITurnState(game) {
 
   this.update = function AITurnState_update(timedelta) {
     var coordinates = choose_tile();
+    if (!coordinates) {
+      this.game.transition('game_over');
+      return;
+    }
     this.game.grid[coordinates.x][coordinates.y].claim('ai');
 
     var simple_grid = simplify_grid(game.grid);
@@ -341,8 +345,12 @@ AITurnState.prototype = Object.create(GameState.prototype);
 all_states['ai_turn'] = AITurnState;
 
 function GameOverState(game, arguments) {
-  console.log("Game over! " + arguments.winner + " wins!");
-  console.log(arguments.direction + "ly at position " + arguments.position);
+  if (arguments) {
+    console.log("Game over! " + arguments.winner + " wins!");
+    console.log(arguments.direction + "ly at position " + arguments.position);
+  } else {
+    console.log("Game over! it's a draw.");
+  }
 }
 GameOverState.prototype = Object.create(GameState.prototype);
 all_states['game_over'] = GameOverState;
