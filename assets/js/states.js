@@ -262,9 +262,27 @@ function AITurnState(game) {
     return rotate_grid(new_grid, turns - 1);
   }
 
+  function unrotate_coordinates(coordinates, turns) {
+    if (coordinates.x === 1 && coordinates.y === 2) {
+      return coordinates;
+    }
+
+    if (turns === 0) {
+      return coordinates;
+    }
+
+    return unrotate_coordinates(
+      new Coordinates(3 - (coordinates.y + 1) , coordinates.x),
+      turns - 1);
+  }
+
   function choose_tile() {
     var grid = simplify_grid(game.grid);
+    var rotated_grid = null;
     var valid_moves = [];
+
+    var winning_move = null;
+    var blocking_move = null;
 
     for (var i = 0; i < 9; i += 1) {
       var coords = new IndexCoordinates(i);
@@ -276,13 +294,13 @@ function AITurnState(game) {
         // will AI win if they go here?
         grid[coords.x][coords.y] = 'ai';
         if (check_for_winner(grid)) {
-          return coords;
+          winning_move = coords;
         }
 
         // will Player win if they go here?
         grid[coords.x][coords.y] = 'player';
         if (check_for_winner(grid)) {
-          return coords;
+          blocking_move = coords;
         }
 
         // if not, erase that
@@ -292,16 +310,22 @@ function AITurnState(game) {
     }
 
     var turns_taken = 9 - valid_moves.length;
+    var candidate = candidate = winning_move || blocking_move || null;
+    if (candidate) {
+      return candidate;
+    }
 
     if (turns_taken === 0) {
       // Going first, so grab the corner
-      return new Coordinates(0, 0);
+      candidate = new Coordinates(0, 0);
     }
     if (turns_taken === 1) {
       // going second
+
       // did they go center?
       if (grid[1][1]) {
-
+        console.log('center');
+        candidate = new Coordinates(0, 0)
       }
       // normalize, so if they went corner or edge, it's in pos 0 or 1
       if (grid[2][0] || grid[2][1]) {
@@ -314,15 +338,26 @@ function AITurnState(game) {
         game.ai.rotations = 3;
       }
 
-      var rotated_grid = rotate_grid(grid, game.ai.rotations);
-      // did they go corner?
-      if (rotated_grid[0][0] || rotated_grid[1][0]) {
-        // also go center
-        return new Coordinates(1, 1);
-      }
+      // go corner, if we havent chosen yet
+      console.log('corner');
+      candidate = candidate || new Coordinates(1, 1);
     }
 
-    // At this point, we don't have a win, a block, or a strategy start
+    var rotated_grid = rotate_grid(grid, game.ai.rotations);
+
+    // block the corner strategy
+    if (rotated_grid[0][0] && rotated_grid[2][2]) {
+      console.log('blocking strategy');
+      var reverse_rotations = (4 - game.ai.rotations) % 4;
+      candidate = unrotate_coordinates(new Coordinates(1, 0), reverse_rotations);
+    }
+
+    // check that the move is valid
+    if (candidate && !grid[candidate.x][candidate.y]) {
+      return candidate;
+    }
+
+    // still don't have a decision? fuck it. first available move.
     return valid_moves[0];
   }
 
@@ -377,7 +412,7 @@ function GameOverState(game, arguments) {
       line_sprite.y = 1.5 * Tile.TILE_HEIGHT;
     }
     if (arguments.direction === 'diagonal') {
-      line_sprite.rotation = (0.25 + arguments.position) * PI;
+      line_sprite.rotation = (0.25 + arguments.position / 2) * PI;
       line_sprite.x = 1.5 * Tile.TILE_WIDTH;
       line_sprite.y = 1.5 * Tile.TILE_HEIGHT;
     }
