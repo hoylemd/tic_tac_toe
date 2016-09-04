@@ -13,7 +13,7 @@ function Game() {
   this.stage = new PIXI.Container();
 
   // Add the canvas to the DOM
-  document.body.appendChild(this.renderer.view);
+  document.getElementsByClassName('game_canvas')[0].appendChild(this.renderer.view);
 
   // get the states
   this.game_states = get_all_states();
