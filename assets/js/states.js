@@ -117,7 +117,7 @@ function check_line(first, second, third) {
   return first && first === second && first === third;
 }
 
-function check_for_winner(tile_grid) {
+function simplify_grid(tile_grid) {
   var grid = [['','',''],
               ['','',''],
               ['','','']]
@@ -130,6 +130,10 @@ function check_for_winner(tile_grid) {
     }
   }
 
+  return grid;
+}
+
+function check_for_winner(grid) {
   for (var i = 0; i < 3; i += 1) {
     // check vertical
     if (check_line(grid[i][0], grid[i][1], grid[i][2])) {
@@ -160,7 +164,7 @@ function check_for_winner(tile_grid) {
   }
   if (check_line(grid[2][0], grid [1][1], grid[0][2])) {
     return {
-      winner: grid[0][0],
+      winner: grid[2][0],
       direction: 'diagonal',
       position: 1
     }
@@ -177,7 +181,8 @@ function MainState(game) {
   function claim(object, arguments) {
     object.claim('player');
 
-    var result = check_for_winner(game.grid);
+    var simple_grid = simplify_grid(game.grid);
+    var result = check_for_winner(simple_grid);
 
     if (result) {
       this.game.transition('game_over', result);
@@ -217,7 +222,8 @@ function AITurnState(game) {
     var coordinates = choose_tile();
     this.game.grid[coordinates.x][coordinates.y].claim('ai');
 
-    var result = check_for_winner(game.grid);
+    var simple_grid = simplify_grid(game.grid);
+    var result = check_for_winner(simple_grid);
 
     if (result) {
       this.game.transition('game_over', result);
