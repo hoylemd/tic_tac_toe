@@ -215,6 +215,50 @@ function AITurnState(game) {
 
   this.name = 'ai_state';
 
+  function print_grid(grid) {
+    function mark(x, y) {
+      var value = grid[x][y];
+      if (value === 'player') {
+        return 'X';
+      }
+      if (value === 'ai') {
+        return 'O';
+      }
+      return ' ';
+    }
+
+    var str = '';
+    str += '[' + mark(0, 0) + '][' + mark(1, 0) + '][' + mark(2, 0) + ']\n';
+    str += '[' + mark(0, 1) + '][' + mark(1, 1) + '][' + mark(2, 1) + ']\n';
+    str += '[' + mark(0, 2) + '][' + mark(1, 2) + '][' + mark(2, 2) + ']';
+
+    return str;
+  }
+
+  function rotate_grid(grid, turns) {
+    if (!turns) {
+      return grid;
+    }
+        var new_grid = [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', '']
+    ];
+    new_grid[0][0] = grid[2][0];
+    new_grid[1][0] = grid[2][1];
+    new_grid[2][0] = grid[2][2];
+
+    new_grid[0][1] = grid[1][0];
+    new_grid[1][1] = grid[1][1];
+    new_grid[2][1] = grid[1][2];
+
+    new_grid[0][2] = grid[0][0];
+    new_grid[1][2] = grid[0][1];
+    new_grid[2][2] = grid[0][2];
+
+    return rotate_grid(new_grid, turns - 1);
+  }
+
   function choose_tile() {
     var grid = simplify_grid(game.grid);
     var valid_moves = [];
