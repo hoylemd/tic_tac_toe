@@ -107,6 +107,7 @@ function InitializingState(game) {
       game.grid[i] = new_row;
     }
 
+    game.log('Tic Tac Toe! You go first.');
     this.game.transition('main');
   };
 }
@@ -189,6 +190,8 @@ function MainState(game) {
     } else {
       this.game.transition('ai_turn');
     }
+
+    game.log('You marked (' + object.column + ',' + object.row + '). My turn!');
   }
 
   this.event_handlers = {
@@ -331,12 +334,15 @@ function AITurnState(game) {
     }
     this.game.grid[coordinates.x][coordinates.y].claim('ai');
 
+    game.log('I choose (' + coordinates.x + ', ' + coordinates.y + ').')
+
     var simple_grid = simplify_grid(game.grid);
     var result = check_for_winner(simple_grid);
 
     if (result) {
       this.game.transition('game_over', result);
     } else {
+      game.log('Your turn!')
       this.game.transition('main');
     }
   };
@@ -346,11 +352,15 @@ all_states['ai_turn'] = AITurnState;
 
 function GameOverState(game, arguments) {
   if (arguments) {
-    console.log("Game over! " + arguments.winner + " wins!");
-    console.log(arguments.direction + "ly at position " + arguments.position);
+    if (arguments.winner === 'player') {
+      game.log("Game over. You... won? but... but I'm undefeatable... YOU CHEATED!!!!!!!");
+    } else {
+      game.log("Game over! I win! See? " + arguments.direction + "ly!");
+    }
   } else {
-    console.log("Game over! it's a draw.");
+    game.log("Game over! it's a draw.");
   }
+  game.log("Refresh to play again.");
 }
 GameOverState.prototype = Object.create(GameState.prototype);
 all_states['game_over'] = GameOverState;

@@ -5,8 +5,6 @@
 // from states.js:
 //   get_all_states()
 function Game() {
-  // excision ends
-
   // Set up graphics
   this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
   this.renderer.backgroundColor = this.BACKGROUND_COLOUR || 0x999999;
@@ -70,5 +68,16 @@ Game.prototype = {
     this.state_name = next_state;
     this.transition_arguments = args;
     this.transitioning = true;
+  },
+
+  log_element: null,
+  log: function Game_log(message) {
+    if (!this.log_element) {
+      this.log_element = document.getElementsByClassName('game_log')[0];
+    }
+
+    var entry = document.createElement('DIV');
+    entry.appendChild(document.createTextNode(message));
+    this.log_element.appendChild(entry);
   }
 };
