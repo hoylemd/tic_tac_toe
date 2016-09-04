@@ -198,6 +198,18 @@ function MainState(game) {
 MainState.prototype = Object.create(GameState.prototype);
 all_states['main'] = MainState;
 
+function Coordinates(x, y) {
+  this.x = x;
+  this.y = y;
+}
+Coordinates.prototype = {x: 0, y: 0};
+
+function IndexCoordinates(index) {
+  this.x = index % 3;
+  this.y = Math.floor(index / 3);
+}
+IndexCoordinates.prototype = Object.create(Coordinates.prototype);
+
 function AITurnState(game) {
   GameState.call(this, game);
 
@@ -208,7 +220,7 @@ function AITurnState(game) {
     var valid_moves = [];
 
     for (var i = 0; i < 9; i += 1) {
-      var coords = {x: i % 3, y: Math.floor(i / 3)};
+      var coords = new IndexCoordinates(i);
 
       // if this is a valid move
       if(!grid[coords.x][coords.y]) {
@@ -223,6 +235,11 @@ function AITurnState(game) {
         grid[coords.x][coords.y] = '';
         valid_moves.push(coords);
       }
+    }
+
+    if (valid_moves.length === 9) {
+      // Going first, so grab the corner
+      return new Coordinates(0, 0);
     }
 
     return valid_moves[0];
