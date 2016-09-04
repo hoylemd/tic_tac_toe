@@ -147,7 +147,7 @@ function check_for_winner(grid) {
     // check horizontal
     if (check_line(grid[0][i], grid[1][i], grid[2][i])) {
       return {
-        winner: grid[i][0],
+        winner: grid[0][i],
         direction: 'horizontal',
         position: i
       }
@@ -204,14 +204,24 @@ function AITurnState(game) {
   this.name = 'ai_state';
 
   function choose_tile() {
+    var grid = simplify_grid(game.grid);
     var valid_moves = [];
 
     for (var i = 0; i < 9; i += 1) {
-      var row = Math.floor(i / 3);
-      var column = i % 3;
-      var tile = game.grid[row][column];
-      if (!tile.owner) {
-        valid_moves.push({ x:row, y:column });
+      var coords = {x: i % 3, y: Math.floor(i / 3)};
+
+      // if this is a valid move
+      if(!grid[coords.x][coords.y]) {
+        // check if this will just win the game
+        grid[coords.x][coords.y] = 'ai';
+
+        if (check_for_winner(grid)) {
+          return coords;
+        }
+
+        // if not, erase that
+        grid[coords.x][coords.y] = '';
+        valid_moves.push(coords);
       }
     }
 
