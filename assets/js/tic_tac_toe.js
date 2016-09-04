@@ -11,6 +11,10 @@ function TicTacToeGame() {
   this.width = GRID_COLUMNS * Tile.TILE_WIDTH + 2;
   this.height = GRID_ROWS * Tile.TILE_HEIGHT + 2;
 
+  this.ai = {
+    rotations: 0
+  };
+
   Game.call(this);
 }
 TicTacToeGame.prototype = Object.create(Game.prototype);

@@ -269,8 +269,15 @@ function AITurnState(game) {
       // if this is a valid move
       if(!grid[coords.x][coords.y]) {
         // check if this will just win the game
-        grid[coords.x][coords.y] = 'ai';
 
+        // will AI win if they go here?
+        grid[coords.x][coords.y] = 'ai';
+        if (check_for_winner(grid)) {
+          return coords;
+        }
+
+        // will Player win if they go here?
+        grid[coords.x][coords.y] = 'player';
         if (check_for_winner(grid)) {
           return coords;
         }
@@ -281,11 +288,38 @@ function AITurnState(game) {
       }
     }
 
-    if (valid_moves.length === 9) {
+    var turns_taken = 9 - valid_moves.length;
+
+    if (turns_taken === 0) {
       // Going first, so grab the corner
       return new Coordinates(0, 0);
     }
+    if (turns_taken === 1) {
+      // going second
+      // did they go center?
+      if (grid[1][1]) {
 
+      }
+      // normalize, so if they went corner or edge, it's in pos 0 or 1
+      if (grid[2][0] || grid[2][1]) {
+        game.ai.rotations = 1;
+      }
+      if (grid[2][2] || grid[1][2]) {
+        game.ai.rotations = 2;
+      }
+      if (grid[0][2] || grid[0][1]) {
+        game.ai.rotations = 3;
+      }
+
+      var rotated_grid = rotate_grid(grid, game.ai.rotations);
+      // did they go corner?
+      if (rotated_grid[0][0] || rotated_grid[1][0]) {
+        // also go center
+        return new Coordinates(1, 1);
+      }
+    }
+
+    // At this point, we don't have a win, a block, or a strategy start
     return valid_moves[0];
   }
 
