@@ -199,14 +199,18 @@ function AITurnState(game) {
   this.name = 'ai_state';
 
   function choose_tile() {
+    var valid_moves = [];
+
     for (var i = 0; i < 9; i += 1) {
       var row = Math.floor(i / 3);
       var column = i % 3;
       var tile = game.grid[row][column];
       if (!tile.owner) {
-        return {x:row, y:column};
+        valid_moves.push({ x:row, y:column });
       }
     }
+
+    return valid_moves[0];
   }
 
   this.update = function AITurnState_update(timedelta) {
